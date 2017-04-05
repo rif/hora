@@ -1,39 +1,43 @@
 import hmac
 import hashlib
 import time
-import websocket
 import json
+import requests
+import base64
 
-API_KEY = "yMn0s71JpKRZpJQBV57NyyRze90XjKsLOKh1KuIvDos"
-API_SECRET = "Ka6Pb4MpScpL8Osr2Vc4Mm8XhyZVZk79ovSugXR81ZB"
+class Bitfinex(object):
+    def __init__(self, key=None, secret=None):
+        self.key = key
+        self.secret = secret
+        self.url = 'https://api.bitfinex.com/v1/'
 
-nonce = int(time.time() * 1000000)
-auth_payload = 'AUTH{}'.format(nonce)
-signature = hmac.new(
-  API_SECRET.encode(),
-  msg = auth_payload.encode(),
-  digestmod = hashlib.sha384
-).hexdigest()
+    def _get(self, api):
+        r = requests.get(self.url + api)
+        return r.json() if r.status_code == 200 else r.status_code
 
-payload = {
-  'apiKey': API_KEY,
-  'event': 'auth',
-  'authPayload': auth_payload,
-  'authNonce': nonce,
-  'authSig': signature
-}
+    def _post(self, api):
+        payload =json.dumps({
+            'request': '/v1/' + api,
+            'nonce': str(int(time.time()*1000))*5
+        })
 
-ws = websocket.WebSocket()
-ws.connect("wss://api.bitfinex.com/ws/2")
+        body = base64.b64encode(payload)
 
-ws.send(json.dumps(payload))
-print(ws.recv())
+        headers = {
+            'X-BFX-APIKEY': self.key,
+            'X-BFX-PAYLOAD': body,
+            'X-BFX-SIGNATURE': hmac.new(
+                self.secret.encode(),
+                msg = body.encode(),
+                digestmod = hashlib.sha384
+            ).hexdigest()
+        }
 
-payload = {
-  'event': 'ping'
-}
+        r = requests.post(self.url + api, headers=headers, data=body)
+        return r.json()
 
-ws.send(json.dumps(payload))
-print(ws.recv())
+    def lends(self, currency):
+        return self._get('lendbook/'+currency)
 
-ws.close()
+    def wallets(self):
+        return self._post('balances')

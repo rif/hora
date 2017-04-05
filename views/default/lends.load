@@ -1,0 +1,23 @@
+
+<div class="col-md-6">
+<h4>Bitfinex</h4>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>{{=T('Period')}}</th>
+      <th>{{=T('Amount')}}</th>
+      <th>{{=T('Rate')}}</th>
+    </tr>
+  </thead>
+  <tbody>
+{{for lend in lends['bids'][:10]:}}
+    <tr>
+      <td>{{=lend['period']}}</td>
+      <td>{{=lend['amount']}}</td>
+      <td>{{=float(lend['rate'])}}</td>
+    </tr>
+    {{pass}}
+  </tbody>
+</table>
+</div>

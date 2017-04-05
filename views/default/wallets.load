@@ -1,0 +1,25 @@
+{{for account, wallet_array in wallets.iteritems():}}
+<div class="col-md-2">
+<h4>{{=account}}</h4>
+<table class="table">
+  <thead>
+    <tr>
+      <th>{{=T('Available')}}</th>
+      <th>{{=T('Currency')}}</th>
+      <th>{{=T('Amount')}}</th>
+      <th>{{=T('Type')}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{for wallet in wallet_array:}}
+    <tr>
+      <td>{{=wallet['available']}}</td>
+      <td>{{=wallet['currency']}}</td>
+      <td>{{=wallet['amount']}}</td>
+      <td>{{=wallet['type']}}</td>
+    </tr>
+    {{pass}}
+  </tbody>
+</table>
+</div>
+{{pass}}

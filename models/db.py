@@ -138,7 +138,8 @@ db._common_fields.append(Field('request_tenant', default=auth.user_id, writable=
 # auth.enable_record_versioning(db)
 
 db.define_table('provider',
-                Field('name', requires=IS_IN_SET(('Bitfinex', 'Poloniex'))),
+                Field('name'),
+                Field('service', requires=IS_IN_SET(('Bitfinex', 'Poloniex', 'BitMEX', 'CryptoFacilities', 'BTCC Pro', 'OKCoin', 'BitVC'))),
                 Field('api_key', 'string'),
                 Field('secret', 'string'),
                 Field('status', 'string', requires=IS_IN_SET(('enabled', 'disabled')), default='enabled'),

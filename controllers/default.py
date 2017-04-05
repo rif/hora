@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
-# this file is released under public domain and you can use without limitations
-
-# -------------------------------------------------------------------------
-# This is a sample controller
-# - index is the default action of any application
-# - user is required for authentication and authorization
-# - download is for downloading files uploaded in the db (does streaming)
-# -------------------------------------------------------------------------
-
+from prov import provider_classes
 
 def index():
     return dict()
@@ -18,7 +10,7 @@ def providers():
     form = crud.update(db.provider, request.args(0), next=URL('default', 'providers'))
     return locals()
 
-@auth.requires_login()
+@auth.requires_signature()
 def delete_provider():
     provider_id = request.args(0) or redirect('default','index')
     form = FORM.confirm('Are you sure?',{'Back':URL('providers')})
@@ -26,6 +18,20 @@ def delete_provider():
         crud.delete(db.provider, provider_id, next=URL('default', 'providers'), message=T('provider deleted succesfully'))
     response.view = 'default/confirm.html'
     return dict(form=form, entity='provider')
+
+@auth.requires_signature()
+def wallets():
+    providers = db(db.provider.status=='enabled').select()
+    wallets = {}
+    for provider in providers:
+        service = provider_classes[provider.service](provider.api_key, provider.secret)
+        wallets[provider.name] = service.wallets()
+    return dict(wallets=wallets)
+
+def lends():
+    bf = provider_classes['Bitfinex']()
+    lends =  bf.lends('USD')
+    return dict(lends = lends)
 
 def user():
     """
