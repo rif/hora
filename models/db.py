@@ -35,6 +35,7 @@ if not request.env.web2py_runtime_gae:
              pool_size=myconf.get('db.pool_size'),
              migrate_enabled=myconf.get('db.migrate'),
              check_reserved=['all'])
+    session.connect(request, response, cookie_key='yMn0s71JpKRZpJQBV57NyyRze90XjKsLOKh1KuIvDos', compression_level=9)
 else:
     # ---------------------------------------------------------------------
     # connect to Google BigTable (optional 'google:datastore://namespace')
@@ -87,8 +88,8 @@ from gluon.tools import Auth, Service, PluginManager
 
 # host names must be a list of allowed host names (glob syntax allowed)
 auth = Auth(db, host_names=myconf.get('host.names'))
-service = Service()
-plugins = PluginManager()
+#service = Service()
+#plugins = PluginManager()
 
 from gluon.tools import Crud
 crud = Crud(db)

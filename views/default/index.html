@@ -2,6 +2,7 @@
 
 <h2>{{=T('Dashboard')}}</h2>
 
+{{if auth.is_logged_in():}}
 <h3>{{=T('Wallets')}}</h3>
 <div class="row" id="wallets">
   <div class="col-md-2">
@@ -10,6 +11,8 @@
     </div>
   </div>
 </div>
+{{pass}}
+
 
 <h3>{{=T('Lends')}}</h3>
 

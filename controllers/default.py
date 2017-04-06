@@ -29,15 +29,30 @@ def wallets():
         wallets[provider.name] = service.wallets()
     return dict(wallets=wallets)
 
+
+@cache.action(time_expire=5, cache_model=cache.ram, prefix='lends', quick='VLP') # vars, lang and public
 def lends():
     currency = request.vars.currency
     bf = provider_classes['Bitfinex']()
     lends =  var_utils.compact_lends_book(bf.lends(currency)['bids'])
-
     return dict(lends = lends)
 
 
+def ensure_task():
+    scheduled_task = scheduler.task_status(db.scheduler_task.task_name == 'reinvest', output=True)
+    if not scheduled_task:
+        return scheduler.queue_task('reinvest',
+                                    repeats=0,  # run unlimited times
+                                    period=300,  # every 5 min
+                                    timeout=240,  # should take less than 4 min
+                                    retry_failed=-1, # retry for unlimited times (if failed)
+                     )
+    return BEAUTIFY(scheduled_task)
 
+def status():
+    return dict(request=request, session=session, response=response)
+
+@auth.requires_login()
 def user():
     """
     exposes:
