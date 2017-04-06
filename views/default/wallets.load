@@ -1,25 +1,38 @@
-{{for account, wallet_array in wallets.iteritems():}}
-<div class="col-md-2">
-<h4>{{=account}}</h4>
-<table class="table">
-  <thead>
-    <tr>
-      <th>{{=T('Available')}}</th>
-      <th>{{=T('Currency')}}</th>
-      <th>{{=T('Amount')}}</th>
-      <th>{{=T('Type')}}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{for wallet in wallet_array:}}
-    <tr>
-      <td>{{=wallet['available']}}</td>
-      <td>{{=wallet['currency']}}</td>
-      <td>{{=wallet['amount']}}</td>
-      <td>{{=wallet['type']}}</td>
-    </tr>
-    {{pass}}
-  </tbody>
-</table>
+<!-- Nav tabs -->
+<ul class="nav nav-tabs" role="tablist">
+  {{for i, account in enumerate(wallets):}}
+  <li role="presentation" class="{{='active' if i == 0 else ''}}"><a href="#{{=IS_SLUG()(account)[0]}}" aria-controls="{{=IS_SLUG()(account)[0]}}" role="tab" data-toggle="tab">{{=account}}</a></li>
+  {{pass}}
+</ul>
+
+
+<!-- Tab panes -->
+
+<div class="tab-content">
+  {{i=0}}
+  {{for account, wallet_array in wallets.iteritems():}}
+  <div role="tabpanel" class="tab-pane fade {{='in active' if i == 0 else ''}}" id="{{=IS_SLUG()(account)[0]}}">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>{{=T('Available')}}</th>
+          <th>{{=T('Currency')}}</th>
+          <th>{{=T('Amount')}}</th>
+          <th>{{=T('Type')}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{for wallet in wallet_array:}}
+        <tr>
+          <td>{{=wallet['available']}}</td>
+          <td>{{=wallet['currency']}}</td>
+          <td>{{=wallet['amount']}}</td>
+          <td>{{=wallet['type']}}</td>
+        </tr>
+        {{pass}}
+      </tbody>
+    </table>
+  </div>
+  {{i+=1}}
+  {{pass}}
 </div>
-{{pass}}

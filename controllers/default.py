@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from prov import provider_classes
+import var_utils
 
 def index():
     return dict()
@@ -29,9 +30,13 @@ def wallets():
     return dict(wallets=wallets)
 
 def lends():
+    currency = request.vars.currency
     bf = provider_classes['Bitfinex']()
-    lends =  bf.lends('USD')
+    lends =  var_utils.compact_lends_book(bf.lends(currency)['bids'])
+
     return dict(lends = lends)
+
+
 
 def user():
     """

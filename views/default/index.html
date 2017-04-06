@@ -3,10 +3,32 @@
 <h2>{{=T('Dashboard')}}</h2>
 
 <h3>{{=T('Wallets')}}</h3>
-<div class="row" id="wallets"></div>
+<div class="row" id="wallets">
+  <div class="col-md-2">
+    <div>
+      {{=LOAD('default', 'wallets.load', ajax=True, user_signature=True)}}
+    </div>
+  </div>
+</div>
 
 <h3>{{=T('Lends')}}</h3>
-<div class ="row" id="lends"></div>
 
-{{=LOAD('default', 'wallets.load', ajax=True, user_signature=True, target="wallets")}}
-{{=LOAD('default', 'lends.load', ajax=True, target="lends", timeout=5000, times="infinity")}}
+<div class ="row" id="lends">
+  <div class="col-md-6">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active"><a href="#usd" aria-controls="usd" role="tab" data-toggle="tab">{{=T('USD')}}</a></li>
+      <li role="presentation"><a href="#btc" aria-controls="btc" role="tab" data-toggle="tab">{{=T('BTC')}}</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane fade in active" id="usd">
+	{{=LOAD('default', 'lends.load', vars=dict(currency='USD'), ajax=True, timeout=5000, times="infinity")}}
+      </div>
+      <div role="tabpanel" class="tab-pane fade" id="btc">
+	{{=LOAD('default', 'lends.load', vars=dict(currency='BTC'), ajax=True, timeout=5000, times="infinity")}}
+      </div>
+    </div>
+  </div>
+</div>
