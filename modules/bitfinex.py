@@ -17,12 +17,12 @@ class Bitfinex(object):
         return r.json() if r.status_code == 200 else r.status_code
 
     def _post(self, api, **kwargs):
-        params = '?' + '&'.join(['{}={}'.format(k,v) for k,v in kwargs.iteritems()]) if kwargs else ''
-        payload =json.dumps({
-            'request': '/v1/' + api + params,
+        data = {
+            'request': '/v1/' + api,
             'nonce': str(int(time.time()*1000))*5
-        })
-        print payload
+        }
+        data.update(kwargs)
+        payload =json.dumps(data)
 
         body = base64.b64encode(payload)
 
@@ -36,7 +36,7 @@ class Bitfinex(object):
             ).hexdigest()
         }
 
-        r = requests.post(self.url + api + params, headers=headers, data=body)
+        r = requests.post(self.url + api, headers=headers, data=body)
         return r.json()
 
     def lends(self, currency):
@@ -49,10 +49,10 @@ class Bitfinex(object):
         return self._post('offers')
 
     def offer_status(self, id):
-        return self._post('offers/status', offer_id=id)
+        return self._post('offer/status', offer_id=id)
 
     def new_offer(self, currency, amount, rate, period, direction='lend'):
-        return self._post('offer/new',currency=currency, amount=amount, rate=rate, period=period, direction=direction)
+        return self._post('offer/new',currency=currency, amount=str(amount), rate=str(rate), period=period, direction=direction)
 
     def cancel_offer(self, id):
-        return self._post('offer/cacncel', order_id=id)
+        return self._post('offer/cancel', offer_id=id)
