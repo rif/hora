@@ -35,6 +35,7 @@ def lends():
     currency = request.vars.currency
     bf = provider_classes['Bitfinex']()
     lends =  var_utils.compact_lends_book(bf.lends(currency)['bids'])
+    lends = var_utils.prettify_lends_book(lends, currency)
     return dict(lends = lends)
 
 @auth.requires_login()

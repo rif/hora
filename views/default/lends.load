@@ -1,17 +1,17 @@
 <table class="table">
   <thead>
     <tr>
-      <th>{{=T('Period')}}</th>
-      <th>{{=T('Amount')}}</th>
-      <th>{{=T('Rate')}}</th>
+      <th class="text-right">{{=T('Period')}}</th>
+      <th class="text-right">{{=T('Amount')}}</th>
+      <th class="text-right">{{=T('Rate')}}</th>
     </tr>
   </thead>
   <tbody>
     {{for lend in lends[:10]:}}
     <tr>
-      <td>{{=lend['period']}}</td>
-      <td>{{=lend['amount']}}</td>
-      <td>{{=lend['rate']}}</td>
+      <td class="text-right">{{=lend['period']}}</td>
+      <td class="text-right">{{=lend['amount']}}</td>
+      <td class="text-right">{{=lend['rate']}}</td>
     </tr>
     {{pass}}
   </tbody>
