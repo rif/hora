@@ -39,7 +39,7 @@ def lends():
 
 @auth.requires_login()
 def ensure_task():
-    scheduled_task = scheduler.task_status(db.scheduler_task.task_name == 'reinvest', output=True)
+    scheduled_task = scheduler.task_status(db_task.scheduler_task.task_name == 'reinvest', output=True)
     if not scheduled_task:
         return scheduler.queue_task('reinvest',
                                     repeats=0,  # run unlimited times
