@@ -37,7 +37,7 @@ def lends():
     lends =  var_utils.compact_lends_book(bf.lends(currency)['bids'])
     return dict(lends = lends)
 
-
+@auth.requires_login()
 def ensure_task():
     scheduled_task = scheduler.task_status(db.scheduler_task.task_name == 'reinvest', output=True)
     if not scheduled_task:
@@ -49,10 +49,10 @@ def ensure_task():
                      )
     return BEAUTIFY(scheduled_task)
 
+@auth.requires_login()
 def status():
     return dict(request=request, session=session, response=response)
 
-@auth.requires_login()
 def user():
     """
     exposes:
