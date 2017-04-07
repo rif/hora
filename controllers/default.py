@@ -24,11 +24,13 @@ def delete_provider():
 def wallets():
     providers = db(db.provider.status=='enabled').select()
     wallets = {}
+    provider_names = []
     for provider in providers:
+        provider_names.append(provider.name)
         service = clients[provider.service](provider.api_key, provider.secret)
         wallets[provider.name] = service.wallets()
     print wallets
-    return dict(wallets=wallets)
+    return dict(wallets=wallets, providers=provider_names)
 
 @auth.requires_signature()
 def offers():
