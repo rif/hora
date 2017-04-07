@@ -1,12 +1,12 @@
 from gluon.scheduler import Scheduler
-from prov import provider_classes
+from provider_clients import clients
 
 db_task = DAL(myconf.get('db_task.uri'), migrate_enabled=myconf.get('db_task.migrate'))
 
 def task_reinvest():
     providers = db(db.provider.status=='enabled').select()
     for provider in providers:
-        service = provider_classes[provider.service](provider.api_key, provider.secret)
+        service = clients[provider.service](provider.api_key, provider.secret)
         wallets = service.wallets()
         for wallet in wallets:
             if 'type' in wallet and wallet['type']=='deposit':

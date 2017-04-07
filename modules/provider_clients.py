@@ -1,5 +1,5 @@
 from bitfinex import Bitfinex
 
-provider_classes = {
+clients = {
     "Bitfinex": Bitfinex
 }

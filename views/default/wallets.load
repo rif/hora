@@ -1,7 +1,7 @@
 <!-- Nav tabs -->
 <ul class="nav nav-tabs" role="tablist">
-  {{for i, account in enumerate(wallets):}}
-  <li role="presentation" class="{{='active' if i == 0 else ''}}"><a href="#{{=IS_SLUG()(account)[0]}}" aria-controls="{{=IS_SLUG()(account)[0]}}" role="tab" data-toggle="tab">{{=account}}</a></li>
+  {{for i, provider in enumerate(wallets):}}
+  <li role="presentation" class="{{='active' if i == 0 else ''}}"><a href="#wallet-{{=IS_SLUG()(provider)[0]}}" aria-controls="wallet-{{=IS_SLUG()(provider)[0]}}" role="tab" data-toggle="tab">{{=provider}}</a></li>
   {{pass}}
 </ul>
 
@@ -10,8 +10,8 @@
 
 <div class="tab-content">
   {{i=0}}
-  {{for account, wallet_array in wallets.iteritems():}}
-  <div role="tabpanel" class="tab-pane fade {{='in active' if i == 0 else ''}}" id="{{=IS_SLUG()(account)[0]}}">
+  {{for provider, wallet_array in wallets.iteritems():}}
+  <div role="tabpanel" class="tab-pane fade {{='in active' if i == 0 else ''}}" id="wallet-{{=IS_SLUG()(provider)[0]}}">
     <table class="table">
       <thead>
         <tr>

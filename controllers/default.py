@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from prov import provider_classes
+from provider_clients import clients
 import var_utils
 
 def index():
@@ -25,15 +25,29 @@ def wallets():
     providers = db(db.provider.status=='enabled').select()
     wallets = {}
     for provider in providers:
-        service = provider_classes[provider.service](provider.api_key, provider.secret)
+        service = clients[provider.service](provider.api_key, provider.secret)
         wallets[provider.name] = service.wallets()
+    print wallets
     return dict(wallets=wallets)
 
+@auth.requires_signature()
+def offers():
+    providers = db(db.provider.status=='enabled').select()
+    offers = {}
+    credits = {}
+    provider_names = []
+    for provider in providers:
+        provider_names.append(provider.name)
+        service = clients[provider.service](provider.api_key, provider.secret)
+        offers[provider.name] = service.offers()
+        credits[provider.name] = service.credits()
+
+    return dict(offers=offers, credits=credits, providers=provider_names)
 
 @cache.action(time_expire=5, cache_model=cache.ram, prefix='lends', quick='VLP') # vars, lang and public
 def lends():
     currency = request.vars.currency
-    bf = provider_classes['Bitfinex']()
+    bf = clients['Bitfinex']()
     lends =  var_utils.compact_lends_book(bf.lends(currency)['bids'])
     lends = var_utils.prettify_lends_book(lends, currency)
     return dict(lends = lends)

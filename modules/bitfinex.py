@@ -4,12 +4,25 @@ import time
 import json
 import requests
 import base64
+from threading import Lock
+
+mutex = Lock()
 
 class Bitfinex(object):
     def __init__(self, key=None, secret=None):
         self.key = key
         self.secret = secret
         self.url = 'https://api.bitfinex.com/v1/'
+        self._nonce = 0
+
+    def _get_nonce(self):
+        mutex.acquire()
+        try:
+            self._nonce += 1
+            self._nonce = max(int(time.time()*1000000000), self._nonce)
+            return self._nonce
+        finally:
+            mutex.release()
 
     def _get(self, api, *args):
         params = "/" + "/".join(args) if args else ''
@@ -19,7 +32,7 @@ class Bitfinex(object):
     def _post(self, api, **kwargs):
         data = {
             'request': '/v1/' + api,
-            'nonce': str(int(time.time()*1000))*5
+            'nonce': str(self._get_nonce())
         }
         data.update(kwargs)
         payload =json.dumps(data)
@@ -39,6 +52,7 @@ class Bitfinex(object):
         r = requests.post(self.url + api, headers=headers, data=body)
         return r.json()
 
+
     def lends(self, currency):
         return self._get('lendbook', currency)
 
@@ -56,3 +70,6 @@ class Bitfinex(object):
 
     def cancel_offer(self, id):
         return self._post('offer/cancel', offer_id=id)
+
+    def credits(self):
+        return self._post('credits')

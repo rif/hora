@@ -3,11 +3,17 @@
 <h2>{{=T('Dashboard')}}</h2>
 
 {{if auth.is_logged_in():}}
-<h3>{{=T('Wallets')}}</h3>
-<div class="row" id="wallets">
+<div class="row" id="private">
   <div class="col-md-2">
+    <h3>{{=T('Wallets')}}</h3>
     <div>
       {{=LOAD('default', 'wallets.load', ajax=True, user_signature=True)}}
+    </div>
+  </div>
+  <div class="col-md-4">
+    <h3>{{=T('Offers')}}</h3>
+    <div>
+      {{=LOAD('default', 'offers.load', ajax=True, user_signature=True)}}
     </div>
   </div>
 </div>

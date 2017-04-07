@@ -1,0 +1,44 @@
+{{from datetime import datetime}}
+{{from gluon.tools import prettydate}}
+
+<!-- Nav tabs -->
+<ul class="nav nav-tabs" role="tablist">
+  {{for i, provider in enumerate(providers):}}
+  <li role="presentation" class="{{='active' if i == 0 else ''}}"><a href="#offer-{{=IS_SLUG()(provider)[0]}}" aria-controls="offer-{{=IS_SLUG()(provider)[0]}}" role="tab" data-toggle="tab">{{=provider}}</a></li>
+  {{pass}}
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content">
+  {{for i, provider in enumerate(providers):}}
+  <div role="tabpanel" class="tab-pane fade {{='in active' if i == 0 else ''}}" id="offer-{{=IS_SLUG()(provider)[0]}}">
+
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>{{=T('Currency')}}</th>
+	  <th>{{=T('Original Amount')}}</th>
+          <th>{{=T('Remaining Amount')}}</th>
+	  <th>{{=T('Executed Amount')}}</th>
+          <th>{{=T('Rate')}}</th>
+	  <th>{{=T('Placed')}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{for offer in offers[provider]:}}
+        <tr>
+          <td>{{=offer['currency']}}</td>
+	  <td>{{=offer['original_amount']}}</td>
+          <td>{{=offer['remaining_amount']}}</td>
+	  <td>{{=offer['executed_amount']}}</td>
+          <td>{{=offer['rate']}}</td>
+	  <td>{{=prettydate(datetime.fromtimestamp(float(offer['timestamp'])))}}</td>
+        </tr>
+        {{pass}}
+      </tbody>
+    </table>
+  </div>
+  {{i+=1}}
+  {{pass}}
+</div>
