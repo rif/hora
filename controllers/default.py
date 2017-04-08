@@ -29,7 +29,6 @@ def wallets():
         provider_names.append(provider.name)
         service = clients[provider.service](provider.api_key, provider.secret)
         wallets[provider.name] = service.wallets()
-    print wallets
     return dict(wallets=wallets, providers=provider_names)
 
 @auth.requires_signature()

@@ -6,14 +6,16 @@
 <div class="row" id="private">
   <div class="col-md-2">
     <h3>{{=T('Wallets')}}</h3>
-    <div>
-      {{=LOAD('default', 'wallets.load', ajax=True, user_signature=True)}}
+    <button class="btn btn-primary" id="reload_wallets" style="float:right"><span class="glyphicon glyphicon-refresh"></span></button>
+    <div id="wallets_container">
+      {{=LOAD('default', 'wallets.load', ajax=True, user_signature=True, target='wallets_container')}}
     </div>
   </div>
   <div class="col-md-4">
     <h3>{{=T('Lends')}}</h3>
-    <div>
-      {{=LOAD('default', 'offers.load', ajax=True, user_signature=True)}}
+    <button class="btn btn-primary" id="reload_offers" style="float:right"><span class="glyphicon glyphicon-refresh"></span></button>
+    <div id="offers_container">
+      {{=LOAD('default', 'offers.load', ajax=True, user_signature=True, target="offers_container")}}
     </div>
   </div>
 </div>
@@ -41,3 +43,18 @@
     </div>
   </div>
 </div>
+
+{{block page_js}}
+<script type="text/javascript">
+ $(document).ready(function() {
+   $('#reload_wallets').click(function() {
+     web2py_component("{{=URL('default', 'wallets.load', user_signature=True)}}", target='wallets_container');
+     return false;
+   });
+   $('#reload_offers').click(function() {
+     web2py_component("{{=URL('default', 'offers.load', user_signature=True)}}", target='offers_container');
+     return false;
+   });
+ });
+</script>
+{{end}}

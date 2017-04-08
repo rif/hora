@@ -13,6 +13,7 @@
   {{for i, provider in enumerate(providers):}}
   <div role="tabpanel" class="tab-pane fade {{='in active' if i == 0 else ''}}" id="offer-{{=IS_SLUG()(provider)[0]}}">
     <h3>{{=T('Credits')}}</h3>
+    {{if credits[provider]:}}
     <table class="table">
       <thead>
         <tr>
@@ -39,7 +40,11 @@
         {{pass}}
       </tbody>
     </table>
+    {{else:}}
+    <p>{{=T('no credits available')}}</p>
+    {{pass}}
     <h3>{{=T('Offers')}}</h3>
+    {{if offers[provider]:}}
     <table class="table">
       <thead>
         <tr>
@@ -64,6 +69,9 @@
         {{pass}}
       </tbody>
     </table>
+    {{else:}}
+    <p>{{=T('no offers available')}}</p>
+    {{pass}}
   </div>
   {{pass}}
 </div>

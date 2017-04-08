@@ -11,6 +11,7 @@
 <div class="tab-content">
   {{for i, provider in enumerate(providers):}}
   <div role="tabpanel" class="tab-pane fade {{='in active' if i == 0 else ''}}" id="wallet-{{=IS_SLUG()(provider)[0]}}">
+  {{if wallets[provider]:}}
     <table class="table">
       <thead>
         <tr>
@@ -31,6 +32,9 @@
         {{pass}}
       </tbody>
     </table>
+    {{else:}}
+    <p>{{=T('no balances available')}}</p>
+    {{pass}}
   </div>
   {{pass}}
 </div>
