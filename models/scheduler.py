@@ -16,6 +16,7 @@ def task_reinvest():
                 best_bid = service.lend_book('usd')['bids'][0]
                 # place new offer
                 offers_made.append(service.new_offer(wallet['currency'], wallet['available'], best_bid['rate'], best_bid['period']))
+                # TODO: create transaction history item for reporting
     return offers_made
 
 
