@@ -54,7 +54,7 @@ class Bitfinex(object):
             mutex.release()
 
 
-    def lends(self, currency):
+    def lend_book(self, currency):
         return self._get('lendbook', currency)
 
     def wallets(self):
@@ -70,7 +70,7 @@ class Bitfinex(object):
         return self._post('offer/new',currency=currency, amount=str(amount), rate=str(rate), period=period, direction=direction)
 
     def cancel_offer(self, id):
-        return self._post('offer/cancel', offer_id=id)
+        return self._post('offer/cancel', offer_id=int(id))
 
     def credits(self):
         return self._post('credits')

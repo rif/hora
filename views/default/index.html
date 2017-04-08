@@ -35,10 +35,10 @@
     <!-- Tab panes -->
     <div class="tab-content">
       <div role="tabpanel" class="tab-pane fade in active" id="usd">
-	{{=LOAD('default', 'lends.load', vars=dict(currency='USD'), ajax=True, timeout=5000, times="infinity")}}
+	{{=LOAD('default', 'lend_book.load', vars=dict(currency='USD'), ajax=True, timeout=5000, times="infinity")}}
       </div>
       <div role="tabpanel" class="tab-pane fade" id="btc">
-	{{=LOAD('default', 'lends.load', vars=dict(currency='BTC'), ajax=True, timeout=5000, times="infinity")}}
+	{{=LOAD('default', 'lend_book.load', vars=dict(currency='BTC'), ajax=True, timeout=5000, times="infinity")}}
       </div>
     </div>
   </div>

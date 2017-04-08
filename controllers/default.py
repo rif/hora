@@ -45,13 +45,22 @@ def offers():
 
     return dict(offers=offers, credits=credits, providers=provider_names)
 
+@auth.requires_signature()
+def cancel_offer():
+    provider_name = request.vars.provider
+    offer_id = request.vars.offer
+    provider = db(db.provider.name==provider_name).select().first()
+    service = clients[provider.service](provider.api_key, provider.secret)
+    service.cancel_offer(offer_id)
+    redirect(URL('default', 'index.html'))
+
 @cache.action(time_expire=5, cache_model=cache.ram, prefix='lends', quick='VLP') # vars, lang and public
-def lends():
+def lend_book():
     currency = request.vars.currency
     bf = clients['Bitfinex']()
-    lends =  var_utils.compact_lends_book(bf.lends(currency)['bids'])
-    lends = var_utils.prettify_lends_book(lends, currency)
-    return dict(lends = lends)
+    lend_book =  var_utils.compact_lends_book(bf.lend_book(currency)['bids'])
+    lend_book = var_utils.prettify_lends_book(lend_book, currency)
+    return dict(lend_book = lend_book)
 
 @auth.requires_login()
 def ensure_task():
