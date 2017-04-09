@@ -10,10 +10,16 @@ def task_reinvest():
         service = clients[provider.service](provider.api_key, provider.secret)
         wallets = service.wallets()
         for wallet in wallets:
-            # TODO: check for minimum lend offer
-            if 'type' in wallet and wallet['type']=='deposit' and float(wallet['available']) > 0:
+            # TODO: make this use real current rates!
+            minOffer = 50
+            if wallet['currency'].lower() == 'btc':
+                minOffer = 0.043
+            if wallet['currency'].lower() == 'eth':
+                minOffer = 1.15
+            if 'type' in wallet and wallet['type']=='deposit' and float(wallet['available']) > minOffer:
                 # get best bid
-                best_bid = service.lend_book('usd')['bids'][0]
+                # TODO: don't rely on implicit ordering for best bid
+                best_bid = service.lend_book(wallet['currency'])['bids'][0]
                 # place new offer
                 offers_made.append(service.new_offer(wallet['currency'], wallet['available'], best_bid['rate'], best_bid['period']))
                 # TODO: create transaction history item for reporting
