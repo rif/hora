@@ -4,32 +4,33 @@
 
 {{if auth.is_logged_in():}}
 <div class="row" id="private">
-  <div class="col-md-2">
-    <h3>{{=T('Wallets')}}</h3>
-    <button class="btn btn-primary" id="reload_wallets" style="float:right"><span class="glyphicon glyphicon-refresh"></span></button>
-    <div id="wallets_container">
-      {{=LOAD('default', 'wallets.load', ajax=True, user_signature=True, target='wallets_container')}}
-    </div>
-  </div>
-  <div class="col-md-4">
-    <h3>{{=T('Lends')}}</h3>
+  <div class="col-md-8">
+    <h3>{{=T('Invested')}}</h3>
     <button class="btn btn-primary" id="reload_offers" style="float:right"><span class="glyphicon glyphicon-refresh"></span></button>
     <div id="offers_container">
       {{=LOAD('default', 'offers.load', ajax=True, user_signature=True, target="offers_container")}}
+    </div>
+  </div>
+  <div class="col-md-4">
+    <h3>{{=T('Your Wallets')}}</h3>
+    <button class="btn btn-primary" id="reload_wallets" style="float:right"><span class="glyphicon glyphicon-refresh"></span></button>
+    <div id="wallets_container">
+      {{=LOAD('default', 'wallets.load', ajax=True, user_signature=True, target='wallets_container')}}
     </div>
   </div>
 </div>
 {{pass}}
 
 
-<h3>{{=T('Lends')}}</h3>
+<h3>{{=T('Current Loan Bids')}}</h3>
 
-<div class ="row" id="lends">
-  <div class="col-md-6">
+<div class ="row" id="loan-bids">
+  <div class="col-md-12">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active"><a href="#usd" aria-controls="usd" role="tab" data-toggle="tab">{{=T('USD')}}</a></li>
       <li role="presentation"><a href="#btc" aria-controls="btc" role="tab" data-toggle="tab">{{=T('BTC')}}</a></li>
+      <li role="presentation"><a href="#eth" aria-controls="eth" role="tab" data-toggle="tab">{{=T('ETH')}}</a></li>
     </ul>
 
     <!-- Tab panes -->
@@ -39,6 +40,9 @@
       </div>
       <div role="tabpanel" class="tab-pane fade" id="btc">
 	{{=LOAD('default', 'lend_book.load', vars=dict(currency='BTC'), ajax=True, timeout=5000, times="infinity")}}
+      </div>
+      <div role="tabpanel" class="tab-pane fade" id="eth">
+	{{=LOAD('default', 'lend_book.load', vars=dict(currency='ETH'), ajax=True, timeout=5000, times="infinity")}}
       </div>
     </div>
   </div>
