@@ -4,7 +4,7 @@ def compact_lends_book(lends):
     current_amount = float(lends[0]['amount'])
     current_period = lends[0]['period']
     for lend in lends[1:]:
-        if current_period == lend['period'] and current_rate - float(lend['rate']) < 0.01:
+        if current_period == lend['period'] and current_rate > 0.001 and current_rate - float(lend['rate']) < 0.01:
             current_amount += float(lend['amount'])
         else:
             new_lends.append({'rate':current_rate, 'amount':current_amount, 'period':current_period})
@@ -22,9 +22,12 @@ def to_pretty_currency(amount, currency):
     else:
         return '{:,.3f}'.format(amount)
 
+
 def prettify_lends_book(lends, currency):
     pretty_lends = []
-    for lend in lends[1:]:
-        rate = '{:,.3f} %'.format(lend['rate'])
+    for lend in lends:
+        rate = lend['rate']
+        if rate > 0.001:
+            rate = '{:,.3f} %'.format(lend['rate'])
         pretty_lends.append({'period':lend['period'], 'amount':to_pretty_currency(lend['amount'], currency), 'rate':rate })
     return pretty_lends

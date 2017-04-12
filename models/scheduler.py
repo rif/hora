@@ -19,7 +19,7 @@ def task_reinvest():
             if 'type' in wallet and wallet['type']=='deposit' and float(wallet['available']) > minOffer:
                 # get best bid
                 # TODO: don't rely on implicit ordering for best bid
-                best_bid = service.lend_book(wallet['currency'])['bids'][0]
+                best_bid = service.lend_demand(wallet['currency'])[0]
                 # place new offer
                 offers_made.append(service.new_offer(wallet['currency'], wallet['available'], best_bid['rate'], best_bid['period']))
                 # TODO: create transaction history item for reporting

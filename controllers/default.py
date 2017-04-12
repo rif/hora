@@ -57,8 +57,11 @@ def cancel_offer():
 @cache.action(time_expire=5, cache_model=cache.ram, prefix='lends', quick='VLP') # vars, lang and public
 def lend_book():
     currency = request.vars.currency
-    bf = clients['Bitfinex']()
-    lend_book =  var_utils.compact_lends_book(bf.lend_book(currency)['bids'])
+    service = request.vars.service
+    if not service or not currency:
+        redirect(URL('index'))
+    bf = clients[service]()
+    lend_book =  var_utils.compact_lends_book(bf.lend_demand(currency))
     lend_book = var_utils.prettify_lends_book(lend_book, currency)
     return dict(lend_book = lend_book)
 

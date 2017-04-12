@@ -54,17 +54,14 @@ class Bitfinex(object):
             mutex.release()
 
 
-    def lend_book(self, currency):
-        return self._get('lendbook', currency)
+    def lend_demand(self, currency):
+        return sorted(self._get('lendbook', currency)['bids'], key=lambda lb: float(lb['rate']), reverse=True)
 
     def wallets(self):
         return self._post('balances')
 
     def offers(self):
         return self._post('offers')
-
-    def offer_status(self, id):
-        return self._post('offer/status', offer_id=id)
 
     def new_offer(self, currency, amount, rate, period, direction='lend'):
         return self._post('offer/new',currency=currency, amount=str(amount), rate=str(rate), period=period, direction=direction)

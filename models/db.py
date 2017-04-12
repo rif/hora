@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# reload modules, remove in production
+from gluon.custom_import import track_changes; track_changes(True)
+
 # -------------------------------------------------------------------------
 # This scaffolding model makes your app work on Google App Engine too
 # File is released under public domain and you can use without limitations
@@ -23,9 +26,6 @@ from gluon.contrib.appconfig import AppConfig
 # once in production, remove reload=True to gain full speed
 # -------------------------------------------------------------------------
 myconf = AppConfig(reload=True)
-
-# reload modules, remove in production
-from gluon.custom_import import track_changes; track_changes(True)
 
 if not request.env.web2py_runtime_gae:
     # ---------------------------------------------------------------------

@@ -7,8 +7,8 @@ import hmac,hashlib
 def createTimeStamp(datestr, format="%Y-%m-%d %H:%M:%S"):
     return time.mktime(time.strptime(datestr, format))
 
-class poloniex:
-    def __init__(self, APIKey, Secret):
+class Poloniex:
+    def __init__(self, APIKey=None, Secret=None):
         self.APIKey = APIKey
         self.Secret = Secret
 
@@ -32,6 +32,9 @@ class poloniex:
             return json.loads(ret.read())
         elif(command == "returnOrderBook"):
             ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=' + command + '&currencyPair=' + str(req['currencyPair'])))
+            return json.loads(ret.read())
+        elif(command == "returnLoanOrders"):
+            ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=' + command + '&currency=' + str(req['currency'])))
             return json.loads(ret.read())
         elif(command == "returnMarketTradeHistory"):
             ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=' + "returnTradeHistory" + '&currencyPair=' + str(req['currencyPair'])))
@@ -135,6 +138,32 @@ class poloniex:
     def withdraw(self, currency, amount, address):
         return self.api_query('withdraw',{"currency":currency, "amount":amount, "address":address})
 
+    def lend_demand(self, currency):
+        demands = self.api_query('returnLoanOrders', {"currency":currency})['demands']
+        new_demands = []
+        for d in demands:
+            new_demands.append(dict(amount=d['amount'], rate=d['rate'], period=d['rangeMin']))
+        return sorted(new_demands, key=lambda d: float(d['rate']), reverse=True)
 
-p = poloniex('Q20P0WHX-BEQD912P-6GS88DL3-3I62FQLW', '5fe590f2e712e7b6ced31dc246765a995c82e971a0b662d5219fec26167a3f44acaf844019002035a0a53d42dc65faff4a152dfda167de72195edd872786c6a3')
-print(p.returnBalances())
+    def wallets(self):
+        wallets = self.api_query('returnBalances')
+        new_wallets = []
+        for currency, amount in wallets.iteritems():
+            new_wallets.append(dict(available=amount, currency=currency, amount=amount, type='default'))
+        return new_wallets
+
+    def offers(self):
+        return self.api_query('returnOpenLoanOffers')
+
+    def new_offer(self, currency, amount, rate, period, direction='lend'):
+        return self.api_query('createLoanOffer', {'currency':currency, 'amount':amount, 'lendingRate':rate, 'duration':period})
+
+    def cancel_offer(self, id):
+        return self.api_query('cancelLoanOffer', {'orderNumber':id})
+
+    def credits(self):
+        return self.api_query('returnActiveLoans')['provided']
+
+
+
+#p = Poloniex('Q20P0WHX-BEQD912P-6GS88DL3-3I62FQLW', '5fe590f2e712e7b6ced31dc246765a995c82e971a0b662d5219fec26167a3f44acaf844019002035a0a53d42dc65faff4a152dfda167de72195edd872786c6a3')

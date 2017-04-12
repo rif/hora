@@ -25,7 +25,8 @@
 <h3>{{=T('Current Loan Bids')}}</h3>
 
 <div class ="row" id="loan-bids">
-  <div class="col-md-12">
+  <div class="col-md-6">
+    <h3>Bitfinex</h3>
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active"><a href="#usd" aria-controls="usd" role="tab" data-toggle="tab">{{=T('USD')}}</a></li>
@@ -36,13 +37,27 @@
     <!-- Tab panes -->
     <div class="tab-content">
       <div role="tabpanel" class="tab-pane fade in active" id="usd">
-	{{=LOAD('default', 'lend_book.load', vars=dict(currency='USD'), ajax=True, timeout=5000, times="infinity")}}
+	{{=LOAD('default', 'lend_book.load', vars=dict(currency='USD', service='Bitfinex'), ajax=True, timeout=5000, times="infinity")}}
       </div>
       <div role="tabpanel" class="tab-pane fade" id="btc">
-	{{=LOAD('default', 'lend_book.load', vars=dict(currency='BTC'), ajax=True, timeout=5000, times="infinity")}}
+	{{=LOAD('default', 'lend_book.load', vars=dict(currency='BTC', service='Bitfinex'), ajax=True, timeout=5000, times="infinity")}}
       </div>
       <div role="tabpanel" class="tab-pane fade" id="eth">
-	{{=LOAD('default', 'lend_book.load', vars=dict(currency='ETH'), ajax=True, timeout=5000, times="infinity")}}
+	{{=LOAD('default', 'lend_book.load', vars=dict(currency='ETH', service='Bitfinex'), ajax=True, timeout=5000, times="infinity")}}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <h3>Poloniex</h3>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active"><a href="#btc" aria-controls="btc" role="tab" data-toggle="tab">{{=T('BTC')}}</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane fade in active" id="btc">
+	{{=LOAD('default', 'lend_book.load', vars=dict(currency='BTC', service='Poloniex'), ajax=True, timeout=5000, times="infinity")}}
       </div>
     </div>
   </div>
