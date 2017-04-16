@@ -3,6 +3,7 @@ import urllib2
 import json
 import time
 import hmac,hashlib
+import var_utils
 
 def createTimeStamp(datestr, format="%Y-%m-%d %H:%M:%S"):
     return time.mktime(time.strptime(datestr, format))
@@ -142,7 +143,10 @@ class Poloniex:
         demands = self.api_query('returnLoanOrders', {"currency":currency})['demands']
         new_demands = []
         for d in demands:
-            new_demands.append(dict(amount=d['amount'], rate=d['rate'], period=d['rangeMin']))
+            #TODO: Should this call go here? It's more of a controller consideration, but on the
+            #other hand we need it to know that all providers are providing data back in the same format
+            apr = var_utils.daily_to_apr(float(d['rate']))
+            new_demands.append(dict(amount=d['amount'], rate=apr, period=d['rangeMin']))
         return sorted(new_demands, key=lambda d: float(d['rate']), reverse=True)
 
     def wallets(self):

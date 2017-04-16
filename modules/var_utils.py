@@ -31,3 +31,12 @@ def prettify_lends_book(lends, currency):
             rate = '{:,.3f} %'.format(lend['rate'])
         pretty_lends.append({'period':lend['period'], 'amount':to_pretty_currency(lend['amount'], currency), 'rate':rate })
     return pretty_lends
+
+def daily_to_apr(rate):
+    """Converts a daily interest rate to an annual percentage rate.
+
+    rate - the daily periodic rate
+    See http://www.investopedia.com/terms/a/apr.asp Section: "APR vs Daily Periodic Rate"
+    returns the rate*365*100
+    """
+    return (rate * 365 * 100)
