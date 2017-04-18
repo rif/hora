@@ -57,6 +57,9 @@ class Bitfinex(object):
     def lend_demand(self, currency):
         return sorted(self._get('lendbook', currency)['bids'], key=lambda lb: float(lb['rate']), reverse=True)
 
+    def lend_matches(self, currency):
+        return sorted(self._get('lends', currency), key=lambda l: float(l['timestamp']), reverse=True)
+
     def wallets(self):
         return self._post('balances')
 

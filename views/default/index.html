@@ -37,12 +37,30 @@
     <!-- Tab panes -->
     <div class="tab-content">
       <div role="tabpanel" class="tab-pane fade in active" id="usd">
+	<button class="btn btn-primary" style="float:right" type="button" data-toggle="collapse" data-target="#collapse-usd" aria-expanded="false" aria-controls="collapseExample">
+	  {{=T('Latest offers matched')}}
+	</button>
+	<div class="collapse" id="collapse-usd">
+	  {{=LOAD('default', 'lend_matches.load', vars=dict(currency='USD', service='Bitfinex'), ajax=True, timeout=5000, times="infinity")}}
+	</div>
 	{{=LOAD('default', 'lend_book.load', vars=dict(currency='USD', service='Bitfinex'), ajax=True, timeout=5000, times="infinity")}}
       </div>
       <div role="tabpanel" class="tab-pane fade" id="btc">
+	<button class="btn btn-primary" style="float:right" type="button" data-toggle="collapse" data-target="#collapse-btc" aria-expanded="false" aria-controls="collapseExample">
+	  {{=T('Latest offers matched')}}
+	</button>
+	<div class="collapse" id="collapse-btc">
+	  {{=LOAD('default', 'lend_matches.load', vars=dict(currency='BTC', service='Bitfinex'), ajax=True, timeout=5000, times="infinity")}}
+	</div>
 	{{=LOAD('default', 'lend_book.load', vars=dict(currency='BTC', service='Bitfinex'), ajax=True, timeout=5000, times="infinity")}}
       </div>
       <div role="tabpanel" class="tab-pane fade" id="eth">
+	<button class="btn btn-primary" style="float:right" type="button" data-toggle="collapse" data-target="#collapse-eth" aria-expanded="false" aria-controls="collapseExample">
+	  {{=T('Latest offers matched')}}
+	</button>
+	<div class="collapse" id="collapse-eth">
+	  {{=LOAD('default', 'lend_matches.load', vars=dict(currency='ETH', service='Bitfinex'), ajax=True, timeout=5000, times="infinity")}}
+	</div>
 	{{=LOAD('default', 'lend_book.load', vars=dict(currency='ETH', service='Bitfinex'), ajax=True, timeout=5000, times="infinity")}}
       </div>
     </div>

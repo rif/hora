@@ -149,6 +149,10 @@ class Poloniex:
             new_demands.append(dict(amount=d['amount'], rate=apr, period=d['rangeMin']))
         return sorted(new_demands, key=lambda d: float(d['rate']), reverse=True)
 
+    def lend_matches(self, currency):
+        demands = self.api_query('returnLoanOrders', {"currency":currency})
+        return demands.keys()
+
     def wallets(self):
         wallets = self.api_query('returnBalances')
         new_wallets = []

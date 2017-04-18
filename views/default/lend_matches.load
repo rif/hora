@@ -1,0 +1,21 @@
+{{from datetime import datetime}}
+{{from gluon.tools import prettydate}}
+
+<table class="table">
+  <thead>
+    <tr>
+      <th class="text-right">{{=T('Matched')}}</th>
+      <th class="text-right">{{=T('Amount Lent')}}</th>
+      <th class="text-right">{{=T('Rate')}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{for lend in lend_matches[:10]:}}
+    <tr>
+      <td>{{=prettydate(datetime.fromtimestamp(float(lend['timestamp'])))}}</td>
+      <td class="text-right">{{=lend['amount_lent']}}</td>
+      <td class="text-right">{{=lend['rate']}}</td>
+    </tr>
+    {{pass}}
+  </tbody>
+</table>

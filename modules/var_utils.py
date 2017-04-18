@@ -28,7 +28,7 @@ def prettify_lends_book(lends, currency):
     for lend in lends:
         rate = lend['rate']
         if rate > 0.001:
-            rate = '{:,.3f} %'.format(lend['rate'])
+            rate = '{:,.3f} %'.format(float(lend['rate']))
         pretty_lends.append({'period':lend['period'], 'amount':to_pretty_currency(lend['amount'], currency), 'rate':rate })
     return pretty_lends
 
