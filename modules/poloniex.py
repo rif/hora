@@ -161,7 +161,14 @@ class Poloniex:
         return new_wallets
 
     def offers(self):
-        return self.api_query('returnOpenLoanOffers')
+        ofs_dict = self.api_query('returnOpenLoanOffers')
+        if isinstance(ofs_dict, list):
+            return ofs_dict
+        new_offers = []
+        for currency, ofs in ofs_dict.iteritems():
+            for of in ofs:
+                new_offers.append(dict(rate=of['rate'], remaining_amount = of['amount'], original_amount = of['amount'], executed_amount = of['amount'], timestamp=of['date'], period=of['duration'], currency=currency, status='ACTIVE', id=of['id']))
+        return new_offers
 
     def new_offer(self, currency, amount, rate, period, direction='lend'):
         return self.api_query('createLoanOffer', {'currency':currency, 'amount':amount, 'lendingRate':rate, 'duration':period})
@@ -170,7 +177,11 @@ class Poloniex:
         return self.api_query('cancelLoanOffer', {'orderNumber':id})
 
     def credits(self):
-        return self.api_query('returnActiveLoans')['provided']
+        cds = self.api_query('returnActiveLoans')['provided']
+        new_credits = []
+        for c in cds:
+            new_credits.append(dict(timestamp=c['date'], period=c['duration'], currency=c['currency'], amount=c['amount'], rate=c['rate'], status='ACTIVE'))
+        return new_credits
 
 
 
