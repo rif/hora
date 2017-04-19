@@ -154,9 +154,9 @@ class Poloniex:
         return demands.keys()
 
     def wallets(self):
-        wallets = self.api_query('returnBalances')
+        wallets = self.api_query('returnAvailableAccountBalances')
         new_wallets = []
-        for currency, amount in wallets.iteritems():
+        for currency, amount in wallets['lending'].iteritems():
             new_wallets.append(dict(available=amount, currency=currency, amount=amount, type='default'))
         return new_wallets
 
