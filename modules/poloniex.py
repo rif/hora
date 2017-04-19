@@ -167,7 +167,7 @@ class Poloniex:
         new_offers = []
         for currency, ofs in ofs_dict.iteritems():
             for of in ofs:
-                new_offers.append(dict(rate=of['rate'], remaining_amount = of['amount'], original_amount = of['amount'], executed_amount = of['amount'], timestamp=of['date'], period=of['duration'], currency=currency, status='ACTIVE', id=of['id']))
+                new_offers.append(dict(rate=of['rate'], remaining_amount = of['amount'], original_amount = of['amount'], executed_amount = of['amount'], timestamp=createTimeStamp(of['date']), period=of['duration'], currency=currency, status='ACTIVE', id=of['id']))
         return new_offers
 
     def new_offer(self, currency, amount, rate, period, direction='lend'):
@@ -180,9 +180,5 @@ class Poloniex:
         cds = self.api_query('returnActiveLoans')['provided']
         new_credits = []
         for c in cds:
-            new_credits.append(dict(timestamp=c['date'], period=c['duration'], currency=c['currency'], amount=c['amount'], rate=c['rate'], status='ACTIVE'))
+            new_credits.append(dict(timestamp=createTimeStamp(c['date']), period=c['duration'], currency=c['currency'], amount=c['amount'], rate=c['rate'], status='ACTIVE'))
         return new_credits
-
-
-
-#p = Poloniex('Q20P0WHX-BEQD912P-6GS88DL3-3I62FQLW', '5fe590f2e712e7b6ced31dc246765a995c82e971a0b662d5219fec26167a3f44acaf844019002035a0a53d42dc65faff4a152dfda167de72195edd872786c6a3')

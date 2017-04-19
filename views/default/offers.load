@@ -1,4 +1,4 @@
-{{from dateutil.parser import parse}}
+{{from datetime import datetime}}
 {{from gluon.tools import prettydate}}
 
 <!-- Nav tabs -->
@@ -34,7 +34,7 @@
           <td>{{=credit['period']}}</td>
 	  <td>{{=credit['rate']}}</td>
           <td>{{=credit['rate']}}</td>
-	  <td>{{=credit['timestamp']}}</td>
+	 <td>{{=prettydate(datetime.fromtimestamp(float(credit['timestamp'])))}}</td>
 	  <td>{{=credit['status']}}</td>
         </tr>
         {{pass}}
@@ -65,7 +65,7 @@
           <td>{{=offer['remaining_amount']}}</td>
 	  <td>{{=offer['executed_amount']}}</td>
           <td>{{=offer['rate']}}</td>
-	  <td>{{=offer['timestamp']}}</td>
+	  <td>{{=prettydate(datetime.fromtimestamp(float(offer['timestamp'])))}}</td>
 	  <td><a class="btn btn-primary" id="reload_offers" href="{{=URL('default', 'cancel_offer', vars=dict(provider=provider, offer=offer['id']), user_signature=True)}}"><span class="glyphicon glyphicon-cancel"></span> {{=T('Cancel')}}</a></td>
         </tr>
         {{pass}}
