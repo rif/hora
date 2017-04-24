@@ -3,7 +3,8 @@ import urllib2
 import json
 import time
 import hmac,hashlib
-import var_utils
+from lend_bid import LendBid
+
 
 def createTimeStamp(datestr, format="%Y-%m-%d %H:%M:%S"):
     return time.mktime(time.strptime(datestr, format))
@@ -12,6 +13,8 @@ class Poloniex:
     def __init__(self, APIKey=None, Secret=None):
         self.APIKey = APIKey
         self.Secret = Secret
+        self._fee = 0.15
+        self._rate_type = 'daily'
 
     def post_process(self, before):
         after = before
@@ -140,14 +143,12 @@ class Poloniex:
         return self.api_query('withdraw',{"currency":currency, "amount":amount, "address":address})
 
     def lend_demand(self, currency):
-        demands = self.api_query('returnLoanOrders', {"currency":currency})['demands']
-        new_demands = []
-        for d in demands:
-            #TODO: Should this call go here? It's more of a controller consideration, but on the
-            #other hand we need it to know that all providers are providing data back in the same format
-            apr = var_utils.daily_to_apr(float(d['rate']))
-            new_demands.append(dict(amount=d['amount'], rate=apr, period=d['rangeMin']))
-        return sorted(new_demands, key=lambda d: float(d['rate']), reverse=True)
+        lb_json = self.api_query('returnLoanOrders', {"currency":currency})['demands']
+        lend_bids = []
+        for lbj in lb_json:
+            lend_bids.append(LendBid(rate=lbj['rate'], amount=lbj['amount'], period=lbj['rangeMin'], rate_type=self._rate_type, fee=self._fee))
+
+        return sorted(lend_bids, key=lambda lb: float(lb.rate), reverse=True)
 
     def lend_matches(self, currency):
         demands = self.api_query('returnLoanOrders', {"currency":currency})

@@ -22,6 +22,7 @@ def delete_provider():
 
 @auth.requires_signature()
 def wallets():
+    logger.debug("Getting wallets...")
     providers = db(db.provider.status=='enabled').select()
     wallets = {}
     provider_names = []
@@ -62,7 +63,6 @@ def lend_book():
         redirect(URL('index'))
     bf = clients[service]()
     lend_book =  var_utils.compact_lends_book(bf.lend_demand(currency))
-    lend_book = var_utils.prettify_lends_book(lend_book, currency)
     return dict(lend_book = lend_book)
 
 @cache.action(time_expire=5, cache_model=cache.ram, prefix='lends', quick='VLP') # vars, lang and public

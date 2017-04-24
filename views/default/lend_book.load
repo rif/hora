@@ -3,15 +3,17 @@
     <tr>
       <th class="text-right">{{=T('Period')}}</th>
       <th class="text-right">{{=T('Amount')}}</th>
-      <th class="text-right">{{=T('Rate')}}</th>
+      <th class="text-right">{{=T('APR')}}</th>
+      <th class="text-right">{{=T('Return')}}</th>
     </tr>
   </thead>
   <tbody>
     {{for lend in lend_book[:10]:}}
     <tr>
-      <td class="text-right">{{=lend['period']}}</td>
-      <td class="text-right">{{=lend['amount']}}</td>
-      <td class="text-right">{{=lend['rate']}}</td>
+      <td class="text-right">{{=lend.period}}</td>
+      <td class="text-right">{{=lend.amount}}</td>
+      <td class="text-right">{{=lend.apr}}</td>
+      <td class="text-right">{{=lend.rate_of_return}}</td>
     </tr>
     {{pass}}
   </tbody>

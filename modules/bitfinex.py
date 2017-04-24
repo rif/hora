@@ -5,6 +5,7 @@ import json
 import requests
 import base64
 from threading import Lock
+from lend_bid import LendBid
 
 mutex = Lock()
 
@@ -14,6 +15,8 @@ class Bitfinex(object):
         self.secret = secret
         self.url = 'https://api.bitfinex.com/v1/'
         self._nonce = 0
+        self._fee = 0.15
+        self._rate_type = 'apr'
 
     def _get_nonce(self):
             self._nonce += 1
@@ -55,7 +58,12 @@ class Bitfinex(object):
 
 
     def lend_demand(self, currency):
-        return sorted(self._get('lendbook', currency)['bids'], key=lambda lb: float(lb['rate']), reverse=True)
+        lb_json = self._get('lendbook', currency)['bids']
+        lend_bids = []
+        for lbj in lb_json:
+            lend_bids.append(LendBid(rate=lbj['rate'], amount=lbj['amount'], period=lbj['period'], rate_type=self._rate_type, fee=self._fee))
+        
+        return sorted(lend_bids, key=lambda lb: float(lb.rate), reverse=True)
 
     def lend_matches(self, currency):
         return sorted(self._get('lends', currency), key=lambda l: float(l['timestamp']), reverse=True)

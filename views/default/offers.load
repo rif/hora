@@ -15,30 +15,30 @@
     <h4>{{=T('Currently Loaned')}}</h4>
     {{if credits[provider]:}}
     <table class="table">
-      <thead>
-        <tr>
-	  <th>{{=T('Currency')}}</th>
-	  <th>{{=T('Amount')}}</th>
-          <th>{{=T('Period')}}</th>
-	  <th>{{=T('Ratet')}}</th>
-          <th>{{=T('Rate')}}</th>
-	  <th>{{=T('Placed')}}</th>
-	  <th>{{=T('Status')}}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{for credit in credits[provider]:}}
-        <tr>
-	  <td>{{=credit['currency']}}</td>
-	  <td>{{=credit['amount']}}</td>
-          <td>{{=credit['period']}}</td>
-	  <td>{{=credit['rate']}}</td>
-          <td>{{=credit['rate']}}</td>
-	 <td>{{=prettydate(datetime.fromtimestamp(float(credit['timestamp'])))}}</td>
-	  <td>{{=credit['status']}}</td>
-        </tr>
-        {{pass}}
-      </tbody>
+    <thead>
+      <tr>
+        <th>{{=T('Currency')}}</th>
+        <th>{{=T('Amount')}}</th>
+        <th>{{=T('Period')}}</th>
+        <th>{{=T('Ratet')}}</th>
+        <th>{{=T('Rate')}}</th>
+        <th>{{=T('Placed')}}</th>
+        <th>{{=T('Status')}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{for credit in credits[provider]:}}
+      <tr>
+        <td>{{=credit['currency']}}</td>
+        <td>{{=credit['amount']}}</td>
+        <td>{{=credit['period']}}</td>
+        <td>{{=credit['rate']}}</td>
+        <td>{{=credit['rate']}}</td>
+        <td>{{=prettydate(datetime.fromtimestamp(float(credit['timestamp'])))}}</td>
+        <td>{{=credit['status']}}</td>
+      </tr>
+      {{pass}}
+    </tbody>
     </table>
     {{else:}}
     <p>{{=T('no credits available')}}</p>
@@ -46,30 +46,30 @@
     <h4>{{=T('Currently Offered')}}</h4>
     {{if offers[provider]:}}
     <table class="table">
-      <thead>
-        <tr>
-          <th>{{=T('Currency')}}</th>
-	  <th>{{=T('Original Amount')}}</th>
-          <th>{{=T('Remaining Amount')}}</th>
-	  <th>{{=T('Executed Amount')}}</th>
-          <th>{{=T('Rate')}}</th>
-	  <th>{{=T('Placed')}}</th>
-	  <th>{{=T('Actions')}}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{for offer in offers[provider]:}}
-        <tr>
-          <td>{{=offer['currency']}}</td>
-	  <td>{{=offer['original_amount']}}</td>
-          <td>{{=offer['remaining_amount']}}</td>
-	  <td>{{=offer['executed_amount']}}</td>
-          <td>{{=offer['rate']}}</td>
-	  <td>{{=prettydate(datetime.fromtimestamp(float(offer['timestamp'])))}}</td>
-	  <td><a class="btn btn-primary" id="reload_offers" href="{{=URL('default', 'cancel_offer', vars=dict(provider=provider, offer=offer['id']), user_signature=True)}}"><span class="glyphicon glyphicon-cancel"></span> {{=T('Cancel')}}</a></td>
-        </tr>
-        {{pass}}
-      </tbody>
+    <thead>
+      <tr>
+        <th>{{=T('Currency')}}</th>
+        <th>{{=T('Original Amount')}}</th>
+        <th>{{=T('Remaining Amount')}}</th>
+        <th>{{=T('Executed Amount')}}</th>
+        <th>{{=T('Rate')}}</th>
+        <th>{{=T('Placed')}}</th>
+        <th>{{=T('Actions')}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{for offer in offers[provider]:}}
+      <tr>
+        <td>{{=offer['currency']}}</td>
+        <td>{{=offer['original_amount']}}</td>
+        <td>{{=offer['remaining_amount']}}</td>
+        <td>{{=offer['executed_amount']}}</td>
+        <td>{{=offer['rate']}}</td>
+        <td>{{=prettydate(datetime.fromtimestamp(float(offer['timestamp'])))}}</td>
+        <td><a class="btn btn-primary" id="reload_offers" href="{{=URL('default', 'cancel_offer', vars=dict(provider=provider, offer=offer['id']), user_signature=True)}}"><span class="glyphicon glyphicon-cancel"></span> {{=T('Cancel')}}</a></td>
+      </tr>
+      {{pass}}
+    </tbody>
     </table>
     {{else:}}
     <p>{{=T('no offers available')}}</p>
