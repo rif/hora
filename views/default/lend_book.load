@@ -11,9 +11,9 @@
     {{for lend in lend_book[:10]:}}
     <tr>
       <td class="text-right">{{=lend.period}}</td>
-      <td class="text-right">{{=lend.amount}}</td>
-      <td class="text-right">{{=lend.apr}}</td>
-      <td class="text-right">{{=lend.rate_of_return}}</td>
+      <td class="text-right">{{='{:,.4f}'.format(float(lend.amount))}}</td>
+      <td class="text-right">{{='{:,.3f} %'.format(lend.apr)}}</td>
+      <td class="text-right">{{='{:,.3f} %'.format(lend.rate_of_return)}}</td>
     </tr>
     {{pass}}
   </tbody>
