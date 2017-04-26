@@ -6,6 +6,8 @@ import requests
 import base64
 from threading import Lock
 from lend_bid import LendBid
+from gluon import current
+from pydash import py_
 
 mutex = Lock()
 
@@ -17,6 +19,8 @@ class Bitfinex(object):
         self._nonce = 0
         self._fee = 0.15
         self._rate_type = 'apr'
+        self._min_lend_amount = 50.0
+        self._min_lend_base = 'usd'
 
     def _get_nonce(self):
             self._nonce += 1
@@ -27,6 +31,8 @@ class Bitfinex(object):
     def _get(self, api, *args):
         params = "/" + "/".join(args) if args else ''
         r = requests.get(self.url + api + params)
+        if r.status_code != 200:
+            current.logger.error('API call failed with status code:{0!s} and message:{1!r}'.format(r.status_code, r.json))
         return r.json() if r.status_code == 200 else r.status_code
 
     def _post(self, api, **kwargs):
@@ -58,6 +64,7 @@ class Bitfinex(object):
 
 
     def lend_demand(self, currency):
+        current.logger.debug("Getting lend demand on Bitfinex...")
         lb_json = self._get('lendbook', currency)['bids']
         lend_bids = []
         for lbj in lb_json:
@@ -82,3 +89,15 @@ class Bitfinex(object):
 
     def credits(self):
         return self._post('credits')
+
+    def min_lend(self, currency):
+        """computes the minimum lendable amount for the specified currency on this platform"""
+        if currency.lower() == self._min_lend_base:
+            return self._min_lend_amount
+        else:
+            pair = currency.lower() + self._min_lend_base
+            tick = self._get('pubticker', pair)
+            exrate = py_.get(tick, 'last_price')
+            if exrate is None:
+                raise Exception('Failed to get last price for pair {0}'.format(pair))
+            return self._min_lend_amount / float(exrate)

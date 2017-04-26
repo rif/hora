@@ -4,6 +4,8 @@ import json
 import time
 import hmac,hashlib
 from lend_bid import LendBid
+from gluon import current
+from pydash import py_
 
 
 def createTimeStamp(datestr, format="%Y-%m-%d %H:%M:%S"):
@@ -15,6 +17,8 @@ class Poloniex:
         self.Secret = Secret
         self._fee = 0.15
         self._rate_type = 'daily'
+        self._min_lend_amount = 0.01
+        self._min_lend_base = 'btc'
 
     def post_process(self, before):
         after = before
@@ -143,6 +147,7 @@ class Poloniex:
         return self.api_query('withdraw',{"currency":currency, "amount":amount, "address":address})
 
     def lend_demand(self, currency):
+        current.logger.debug("Getting lend demand on Poloniex...")
         lb_json = self.api_query('returnLoanOrders', {"currency":currency})['demands']
         lend_bids = []
         for lbj in lb_json:
@@ -183,3 +188,16 @@ class Poloniex:
         for c in cds:
             new_credits.append(dict(timestamp=createTimeStamp(c['date']), period=c['duration'], currency=c['currency'], amount=c['amount'], rate=c['rate'], status='ACTIVE'))
         return new_credits
+
+    def min_lend(self, currency):
+        """computes the minimum lendable amount for the specified currency on this platform"""
+        if currency.lower() == self._min_lend_base:
+            return self._min_lend_amount
+        else:
+            pair = self._min_lend_base.upper() + '_' + currency.upper()
+            path = pair + '.last'
+            ticker = self.returnTicker()
+            exrate = py_.get(ticker, path)
+            if exrate is None:
+                raise Exception('Failed to get last price for pair {0}'.format(pair))
+            return self._min_lend_amount / float(exrate)
