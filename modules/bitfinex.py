@@ -5,7 +5,7 @@ import json
 import requests
 import base64
 from threading import Lock
-from lend_bid import LendBid
+from lend_rate import LendRate
 from gluon import current
 from pydash import py_
 
@@ -24,7 +24,8 @@ class Bitfinex(object):
 
     def _get_nonce(self):
             self._nonce += 1
-            self._nonce = max(int(time.time()*1000000000), self._nonce)
+            #self._nonce = max(int(time.time()*1000000000), self._nonce)
+            self._nonce = max(int(time.time()*1000), self._nonce)
             return self._nonce
 
 
@@ -58,17 +59,19 @@ class Bitfinex(object):
             }
 
             r = requests.post(self.url + api, headers=headers, data=body)
+            if r.status_code != 200:
+                current.logger.error('API call failed with status code:{0!s} and message:{1!r}'.format(r.status_code, r.json))
             return r.json()
         finally:
             mutex.release()
 
 
     def lend_demand(self, currency):
-        current.logger.debug("Getting lend demand on Bitfinex...")
+        current.logger.debug('Getting {0} lend demand on Bitfinex...'.format(currency))
         lb_json = self._get('lendbook', currency)['bids']
         lend_bids = []
         for lbj in lb_json:
-            lend_bids.append(LendBid(rate=lbj['rate'], amount=lbj['amount'], period=lbj['period'], rate_type=self._rate_type, fee=self._fee))
+            lend_bids.append(LendRate(rate=lbj['rate'], amount=lbj['amount'], period=lbj['period'], rate_type=self._rate_type, fee=self._fee))
         
         return sorted(lend_bids, key=lambda lb: float(lb.rate), reverse=True)
 

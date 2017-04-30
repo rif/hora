@@ -1,4 +1,4 @@
-from lend_bid import LendBid
+from lend_rate import LendRate
 
 def compact_lends_book(lends):
     new_lends = []
@@ -10,12 +10,14 @@ def compact_lends_book(lends):
         if current_period == lend.period and current_apr > 0.001 and current_apr - float(lend.apr) < 0.01:
             current_amount += float(lend.amount)
         else:
-            #note this relies on the fact that all LendBids in the list being compacted utilize the same rate_type and fee...
-            new_lends.append(LendBid(rate=current_rate, amount=current_amount, period=current_period, rate_type=lend.rate_type, fee=lend.fee))
+            #note this relies on the fact that all LendRates in the list being compacted utilize the same rate_type and fee...
+            new_lends.append(LendRate(rate=current_rate, amount=current_amount, period=current_period, rate_type=lend.rate_type, fee=lend.fee))
             current_amount = float(lend.amount)
             current_rate = float(lend.rate)
             current_apr = lend.apr
             current_period = lend.period
+    #append whatever was compacted at the end of the list
+    new_lends.append(LendRate(rate=current_rate, amount=current_amount, period=current_period, rate_type=lends[-1].rate_type, fee=lends[-1].fee))
     return new_lends
 
 def to_pretty_currency(amount, currency):

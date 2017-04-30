@@ -3,7 +3,7 @@ import urllib2
 import json
 import time
 import hmac,hashlib
-from lend_bid import LendBid
+from lend_rate import LendRate
 from gluon import current
 from pydash import py_
 
@@ -147,11 +147,11 @@ class Poloniex:
         return self.api_query('withdraw',{"currency":currency, "amount":amount, "address":address})
 
     def lend_demand(self, currency):
-        current.logger.debug("Getting lend demand on Poloniex...")
+        current.logger.debug('Getting {0} lend demand on Poloniex...'.format(currency))
         lb_json = self.api_query('returnLoanOrders', {"currency":currency})['demands']
         lend_bids = []
         for lbj in lb_json:
-            lend_bids.append(LendBid(rate=lbj['rate'], amount=lbj['amount'], period=lbj['rangeMin'], rate_type=self._rate_type, fee=self._fee))
+            lend_bids.append(LendRate(rate=lbj['rate'], amount=lbj['amount'], period=lbj['rangeMin'], rate_type=self._rate_type, fee=self._fee))
 
         return sorted(lend_bids, key=lambda lb: float(lb.rate), reverse=True)
 

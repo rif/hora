@@ -1,7 +1,7 @@
 from collections import namedtuple
 
-class LendBid(namedtuple('LendBid', 'rate, amount, period, rate_type, fee')):
-    """Provides a consistent view of a Bid to borrow funds regardless of provider"""
+class LendRate(namedtuple('LendRate', 'rate, amount, period, rate_type, fee')):
+    """Provides a consistent view of a Bid or Offer to borrow/lend funds regardless of provider"""
     
     @property
     def apr(self):
