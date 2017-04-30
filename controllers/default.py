@@ -62,7 +62,7 @@ def lend_book():
     if not service or not currency:
         redirect(URL('index'))
     bf = clients[service]()
-    lend_book =  var_utils.compact_lends_book(bf.lend_demand(currency))
+    lend_book =  var_utils.compact_lends_book(bf.lend_bids(currency))
     return dict(lend_book = lend_book)
 
 @cache.action(time_expire=5, cache_model=cache.ram, prefix='lends', quick='VLP') # vars, lang and public

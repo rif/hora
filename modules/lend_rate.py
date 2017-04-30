@@ -23,4 +23,4 @@ class LendRate(namedtuple('LendRate', 'rate, amount, period, rate_type, fee')):
 
     @property
     def rate_of_return(self):
-        return (1.0 - float(self.fee)) * self.apr
+        return (1.0 - float(self.fee)) * self.apr 

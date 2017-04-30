@@ -66,14 +66,20 @@ class Bitfinex(object):
             mutex.release()
 
 
-    def lend_demand(self, currency):
+    def lend_demand(self, currency, bids_asks):
         current.logger.debug('Getting {0} lend demand on Bitfinex...'.format(currency))
-        lb_json = self._get('lendbook', currency)['bids']
-        lend_bids = []
+        lb_json = self._get('lendbook', currency)[bids_asks]
+        lends = []
         for lbj in lb_json:
-            lend_bids.append(LendRate(rate=lbj['rate'], amount=lbj['amount'], period=lbj['period'], rate_type=self._rate_type, fee=self._fee))
+            lends.append(LendRate(rate=lbj['rate'], amount=lbj['amount'], period=lbj['period'], rate_type=self._rate_type, fee=self._fee))
         
-        return sorted(lend_bids, key=lambda lb: float(lb.rate), reverse=True)
+        return sorted(lends, key=lambda lb: float(lb.rate), reverse=True)
+
+    def lend_bids(self, currency):
+        return self.lend_demand(currency, 'bids')
+        
+    def lend_asks(self, currency):
+        return self.lend_demand(currency, 'asks')
 
     def lend_matches(self, currency):
         return sorted(self._get('lends', currency), key=lambda l: float(l['timestamp']), reverse=True)

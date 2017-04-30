@@ -146,14 +146,20 @@ class Poloniex:
     def withdraw(self, currency, amount, address):
         return self.api_query('withdraw',{"currency":currency, "amount":amount, "address":address})
 
-    def lend_demand(self, currency):
+    def lend_demand(self, currency, bids_asks):
         current.logger.debug('Getting {0} lend demand on Poloniex...'.format(currency))
-        lb_json = self.api_query('returnLoanOrders', {"currency":currency})['demands']
+        lb_json = self.api_query('returnLoanOrders', {"currency":currency})[bids_asks]
         lend_bids = []
         for lbj in lb_json:
             lend_bids.append(LendRate(rate=lbj['rate'], amount=lbj['amount'], period=lbj['rangeMin'], rate_type=self._rate_type, fee=self._fee))
 
         return sorted(lend_bids, key=lambda lb: float(lb.rate), reverse=True)
+
+    def lend_bids(self, currency):
+        return self.lend_demand(currency, 'demands')
+        
+    def lend_asks(self, currency):
+        return self.lend_demand(currency, 'offers')
 
     def lend_matches(self, currency):
         demands = self.api_query('returnLoanOrders', {"currency":currency})
@@ -162,8 +168,11 @@ class Poloniex:
     def wallets(self):
         wallets = self.api_query('returnAvailableAccountBalances')
         new_wallets = []
-        for currency, amount in wallets['lending'].iteritems():
-            new_wallets.append(dict(available=amount, currency=currency, amount=amount, type='default'))
+        # TODO: "deposit" type is bitfinex terminology. do better job of standardizing wallet output
+        # TODO: this default dict isn't the right structure...
+        lending = py_.get(wallets, 'lending', dict(amount=0, currency='btc'))
+        for currency, amount in lending.iteritems():
+            new_wallets.append(dict(available=amount, currency=currency, amount=amount, type='deposit'))
         return new_wallets
 
     def offers(self):
