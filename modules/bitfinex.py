@@ -60,7 +60,7 @@ class Bitfinex(object):
 
             r = requests.post(self.url + api, headers=headers, data=body)
             if r.status_code != 200:
-                current.logger.error('API call failed with status code:{0!s} and message:{1!r}'.format(r.status_code, r.json))
+                current.logger.error('API call to "{0}" failed with status code:{1} and message:{2}'.format(api, r.status_code, r.json))
             return r.json()
         finally:
             mutex.release()

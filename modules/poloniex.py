@@ -169,8 +169,7 @@ class Poloniex:
         wallets = self.api_query('returnAvailableAccountBalances')
         new_wallets = []
         # TODO: "deposit" type is bitfinex terminology. do better job of standardizing wallet output
-        # TODO: this default dict isn't the right structure...
-        lending = py_.get(wallets, 'lending', dict(amount=0, currency='btc'))
+        lending = py_.get(wallets, 'lending', dict(btc=0))
         for currency, amount in lending.iteritems():
             new_wallets.append(dict(available=amount, currency=currency, amount=amount, type='deposit'))
         return new_wallets
