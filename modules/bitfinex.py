@@ -33,7 +33,7 @@ class Bitfinex(object):
         params = "/" + "/".join(args) if args else ''
         r = requests.get(self.url + api + params)
         if r.status_code != 200:
-            current.logger.error('API call failed with status code:{0!s} and message:{1!r}'.format(r.status_code, r))
+            current.logger.error('API call failed with status code:{0!s} and message:{1!r}'.format(r.status_code, r.json))
         return r.json() if r.status_code == 200 else r.status_code
 
     def _post(self, api, **kwargs):
@@ -98,7 +98,13 @@ class Bitfinex(object):
         return self._post('offer/cancel', offer_id=int(id))
 
     def credits(self):
-        return self._post('credits')
+        cds = self._post('credits')
+        new_credits = []
+        for c in cds:
+            rate = float(c['rate']) # bitfinix already is in apy
+            rate_of_return = rate * (1 - self._fee)
+            new_credits.append(dict(timestamp=c['timestamp'], period=c['period'], currency=c['currency'], amount=c['amount'], rate=rate, rate_of_return=rate_of_return, status=c['status']))
+        return new_credits
 
     def min_lend(self, currency):
         """computes the minimum lendable amount for the specified currency on this platform"""

@@ -196,7 +196,9 @@ class Poloniex:
         cds = self.api_query('returnActiveLoans')['provided']
         new_credits = []
         for c in cds:
-            new_credits.append(dict(timestamp=createTimeStamp(c['date']), period=c['duration'], currency=c['currency'], amount=c['amount'], rate=c['rate'], status='ACTIVE'))
+            rate = float(c['rate']) * 365 * 100 #convert to apr
+            rate_of_return = rate * (1 - self._fee)
+            new_credits.append(dict(timestamp=createTimeStamp(c['date']), period=c['duration'], currency=c['currency'], amount=c['amount'], rate=rate, rate_of_return=rate_of_return, status='ACTIVE'))
         return new_credits
 
     def min_lend(self, currency):
