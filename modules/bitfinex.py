@@ -33,7 +33,7 @@ class Bitfinex(object):
         params = "/" + "/".join(args) if args else ''
         r = requests.get(self.url + api + params)
         if r.status_code != 200:
-            current.logger.error('API call failed with status code:{0!s} and message:{1!r}'.format(r.status_code, r.json))
+            current.logger.error('API call failed with status code:{0!s} and message:{1!r}'.format(r.status_code, r))
         return r.json() if r.status_code == 200 else r.status_code
 
     def _post(self, api, **kwargs):
@@ -60,26 +60,27 @@ class Bitfinex(object):
 
             r = requests.post(self.url + api, headers=headers, data=body)
             if r.status_code != 200:
-                current.logger.error('API call to "{0}" failed with status code:{1} and message:{2}'.format(api, r.status_code, r.json))
+                current.logger.error('API call to "{0}" failed with status code:{1} and message:{2!r}'.format(api, r.status_code, r.json))
             return r.json()
         finally:
             mutex.release()
 
 
     def lend_demand(self, currency, bids_asks):
-        current.logger.debug('Getting {0} lend demand on Bitfinex...'.format(currency))
-        lb_json = self._get('lendbook', currency)[bids_asks]
+        # current.logger.debug('Getting {0} lend {1} on Bitfinex...'.format(currency, bids_asks))
+        lends_json = self._get('lendbook', currency)[bids_asks]
         lends = []
-        for lbj in lb_json:
-            lends.append(LendRate(rate=lbj['rate'], amount=lbj['amount'], period=lbj['period'], rate_type=self._rate_type, fee=self._fee))
-        
-        return sorted(lends, key=lambda lb: float(lb.rate), reverse=True)
+        for lend in lends_json:
+            lends.append(LendRate(rate=lend['rate'], amount=lend['amount'], period=lend['period'], rate_type=self._rate_type, fee=self._fee))
+        return lends
 
     def lend_bids(self, currency):
-        return self.lend_demand(currency, 'bids')
+        lends = self.lend_demand(currency, 'bids')
+        return sorted(lends, key=lambda lend: float(lend.rate), reverse=True)
         
     def lend_asks(self, currency):
-        return self.lend_demand(currency, 'asks')
+        lends = self.lend_demand(currency, 'asks')
+        return sorted(lends, key=lambda lend: float(lend.rate), reverse=False)
 
     def lend_matches(self, currency):
         return sorted(self._get('lends', currency), key=lambda l: float(l['timestamp']), reverse=True)

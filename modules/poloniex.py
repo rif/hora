@@ -147,19 +147,21 @@ class Poloniex:
         return self.api_query('withdraw',{"currency":currency, "amount":amount, "address":address})
 
     def lend_demand(self, currency, bids_asks):
-        current.logger.debug('Getting {0} lend demand on Poloniex...'.format(currency))
-        lb_json = self.api_query('returnLoanOrders', {"currency":currency})[bids_asks]
-        lend_bids = []
-        for lbj in lb_json:
-            lend_bids.append(LendRate(rate=lbj['rate'], amount=lbj['amount'], period=lbj['rangeMin'], rate_type=self._rate_type, fee=self._fee))
+        # current.logger.debug('Getting {0} lend {1} on Poloniex...'.format(currency, bids_asks))
+        lends_json = self.api_query('returnLoanOrders', {"currency":currency})[bids_asks]
+        lends = []
+        for lend in lends_json:
+            lends.append(LendRate(rate=lend['rate'], amount=lend['amount'], period=lend['rangeMin'], rate_type=self._rate_type, fee=self._fee))
+        return lends
 
-        return sorted(lend_bids, key=lambda lb: float(lb.rate), reverse=True)
 
     def lend_bids(self, currency):
-        return self.lend_demand(currency, 'demands')
-        
+        lends = self.lend_demand(currency, 'demands')
+        return sorted(lends, key=lambda lend: float(lend.rate), reverse=True)
+
     def lend_asks(self, currency):
-        return self.lend_demand(currency, 'offers')
+        lends = self.lend_demand(currency, 'offers')
+        return sorted(lends, key=lambda lend: float(lend.rate), reverse=False)
 
     def lend_matches(self, currency):
         demands = self.api_query('returnLoanOrders', {"currency":currency})

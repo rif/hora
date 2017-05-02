@@ -81,8 +81,8 @@ def ensure_task():
     if not scheduled_task:
         return scheduler.queue_task('reinvest',
                                     repeats=0,  # run unlimited times
-                                    period=300,  # every 5 min
-                                    timeout=240,  # should take less than 4 min
+                                    period=45,  # every 45 seconds
+                                    timeout=30,  # should take less than 30 sec
                                     retry_failed=-1, # retry for unlimited times (if failed)
                      )
     return BEAUTIFY(scheduled_task)
