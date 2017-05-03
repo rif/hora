@@ -8,6 +8,6 @@ clients = {
 }
 
 strategies = {
-    'Below_Best_Ask': BelowBestAskStrategy,
-    'Best_Bid': BestBidStrategy,
+    'Below_Best_Ask': BelowBestAskStrategy(min_period=2, percent=0.95),
+    'Best_Bid': BestBidStrategy(min_period=2),
 }

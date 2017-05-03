@@ -19,7 +19,7 @@ def task_reinvest():
                 current.logger.debug('  {0} ({1}): {2} {3} available to lend. Min lend is {4}'.format(provider.service, provider.name, float(wallet['available']), wallet['currency'], minOffer))
                 if float(wallet['available']) > minOffer:
 
-                    strayegy = strategies[provider.strategy](2, 0.95)
+                    strategy = strategies[provider.strategy]
                     response = strategy.create_offer(wallet, service)
                     offers_made.append(response)
 
