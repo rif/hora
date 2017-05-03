@@ -142,9 +142,20 @@ db._common_fields.append(Field('request_tenant', default=auth.user_id, writable=
 # auth.enable_record_versioning(db)
 
 db.define_table('provider',
-                Field('name'),
-                Field('service', requires=IS_IN_SET(('Bitfinex', 'Poloniex', 'BitMEX', 'CryptoFacilities', 'BTCC Pro', 'OKCoin', 'BitVC'))),
+                Field('name', 'string'),
+                Field('service', requires=IS_IN_SET(('Bitfinex', 'Poloniex'))), # 'BitMEX', 'CryptoFacilities', 'BTCC Pro', 'OKCoin', 'BitVC'
                 Field('api_key', 'string'),
                 Field('secret', 'string'),
                 Field('status', 'string', requires=IS_IN_SET(('enabled', 'disabled')), default='enabled'),
+)
+
+db.define_table('offer',
+                Field('offer_id', 'string'),
+                Field('owner', 'reference auth_user'),
+                Field('currency', 'string'),
+                Field('amount', 'double'),
+                Field('rate', 'double'),
+                Field('period', 'integer'),
+                Field('status', 'string', requires=IS_IN_SET(('processed', 'cancelled')), default='processed'),
+                Field('created', 'datetime', default=request.now),
 )

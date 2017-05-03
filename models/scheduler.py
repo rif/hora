@@ -7,7 +7,7 @@ db_task = DAL(myconf.get('db_task.uri'), migrate_enabled=myconf.get('db_task.mig
 
 def task_reinvest():
     current.logger.debug('Starting reinvest task...')
-    
+
     providers = db(db.provider.status=='enabled').select()
     offers_made = []
     for provider in providers:
@@ -23,7 +23,7 @@ def task_reinvest():
                     # TODO: move this into a strategy
                     bids = service.lend_bids(wallet['currency'])
                     asks = service.lend_asks(wallet['currency'])
-                    
+
                     # force min period for now
                     min_lend_time = lambda l: l.period == 2
                     # highest_bid = bids[0] #current market dynamics allows this, but it's not a permanent thing
@@ -33,9 +33,27 @@ def task_reinvest():
                     offer_rate = float(highest_bid.rate) + 0.95 * (float(lowest_ask.rate) - float(highest_bid.rate))
                     # place new offer
                     current.logger.debug('  highest_bid:{0} lowest_ask:{1} will_offer:{2}'.format(highest_bid.rate, lowest_ask.rate, offer_rate))
-                    offers_made.append(service.new_offer(wallet['currency'], wallet['available'], offer_rate, lowest_ask.period))
+                    response = service.new_offer(wallet['currency'], wallet['available'], offer_rate, lowest_ask.period)
+                    offers_made.append(response)
 
-                    # TODO: create transaction history item for reporting
+                    # create offer history item for reporting
+                    if not response:
+                        continue
+                    offer_id = ''
+                    if 'offer_id' in response:
+                        offer_id = response['offer_id']
+                    if 'orderID' in response:
+                        offer_id = response['orderID']
+                    if offer_id:
+                        db.offer.insert(
+                            offer_id=offer_id,
+                            owner=provider.created_by,
+                            currency=wallet['currency'],
+                            amount=wallet['available'],
+                            rate=offer_rate,
+                            period=lowest_ask.period
+                        )
+
     return offers_made
 
 
