@@ -146,12 +146,13 @@ db.define_table('provider',
                 Field('service', requires=IS_IN_SET(('Bitfinex', 'Poloniex'))), # 'BitMEX', 'CryptoFacilities', 'BTCC Pro', 'OKCoin', 'BitVC'
                 Field('api_key', 'string'),
                 Field('secret', 'string'),
+                Field('strategy', 'string', requires=IS_IN_SET(('Below_Best_Ask', 'Best_Bid')), default='Best_Bid'),
                 Field('status', 'string', requires=IS_IN_SET(('enabled', 'disabled')), default='enabled'),
 )
 
 db.define_table('offer',
                 Field('offer_id', 'string'),
-                Field('owner', 'reference auth_user'),
+                Field('offered_by', 'reference auth_user'),
                 Field('currency', 'string'),
                 Field('amount', 'double'),
                 Field('rate', 'double'),

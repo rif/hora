@@ -1,7 +1,6 @@
 from gluon.scheduler import Scheduler
-from provider_clients import clients
+from factory import clients, strategies
 from gluon import current
-from pydash import py_
 
 db_task = DAL(myconf.get('db_task.uri'), migrate_enabled=myconf.get('db_task.migrate'))
 
@@ -20,20 +19,8 @@ def task_reinvest():
                 current.logger.debug('  {0} ({1}): {2} {3} available to lend. Min lend is {4}'.format(provider.service, provider.name, float(wallet['available']), wallet['currency'], minOffer))
                 if float(wallet['available']) > minOffer:
 
-                    # TODO: move this into a strategy
-                    bids = service.lend_bids(wallet['currency'])
-                    asks = service.lend_asks(wallet['currency'])
-
-                    # force min period for now
-                    min_lend_time = lambda l: l.period == 2
-                    # highest_bid = bids[0] #current market dynamics allows this, but it's not a permanent thing
-                    highest_bid = py_.find(bids, min_lend_time)
-                    lowest_ask = py_.find(asks, min_lend_time)
-                    # make offer 5% under best ask
-                    offer_rate = float(highest_bid.rate) + 0.95 * (float(lowest_ask.rate) - float(highest_bid.rate))
-                    # place new offer
-                    current.logger.debug('  highest_bid:{0} lowest_ask:{1} will_offer:{2}'.format(highest_bid.rate, lowest_ask.rate, offer_rate))
-                    response = service.new_offer(wallet['currency'], wallet['available'], offer_rate, lowest_ask.period)
+                    strayegy = strategies[provider.strategy](2, 0.95)
+                    response = strategy.create_offer(wallet, service)
                     offers_made.append(response)
 
                     # create offer history item for reporting
@@ -47,7 +34,7 @@ def task_reinvest():
                     if offer_id:
                         db.offer.insert(
                             offer_id=offer_id,
-                            owner=provider.created_by,
+                            offered_by=provider.created_by,
                             currency=wallet['currency'],
                             amount=wallet['available'],
                             rate=offer_rate,

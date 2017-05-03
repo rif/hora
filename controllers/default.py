@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from provider_clients import clients
+from factory import clients
 import var_utils
 
 def index():
