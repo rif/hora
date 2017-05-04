@@ -41,3 +41,10 @@ class BestBidStrategy(strategy):
 
     def determine_rate(self, highest_bid, lowest_ask):
         return float(highest_bid.rate)
+
+class SmartStrategy(strategy):
+    def __init__(self, min_period=2):
+        super(self.__class__, self).__init__(min_period)
+
+    def determine_rate(self, highest_bid, lowest_ask):
+        return float(highest_bid.rate)

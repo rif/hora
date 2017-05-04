@@ -77,9 +77,9 @@ def lend_matches():
 
 @auth.requires_login()
 def ensure_task():
-    scheduled_task = scheduler.task_status(db_task.scheduler_task.task_name == 'reinvest', output=True)
+    scheduled_task = scheduler.task_status(db_task.scheduler_task.task_name == 'check_wallets', output=True)
     if not scheduled_task:
-        return scheduler.queue_task('reinvest',
+        return scheduler.queue_task('check_wallets',
                                     repeats=0,  # run unlimited times
                                     period=45,  # every 45 seconds
                                     timeout=30,  # should take less than 30 sec

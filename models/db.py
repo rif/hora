@@ -146,7 +146,7 @@ db.define_table('provider',
                 Field('service', requires=IS_IN_SET(('Bitfinex', 'Poloniex'))), # 'BitMEX', 'CryptoFacilities', 'BTCC Pro', 'OKCoin', 'BitVC'
                 Field('api_key', 'string'),
                 Field('secret', 'string'),
-                Field('strategy', 'string', requires=IS_IN_SET(('Below_Best_Ask', 'Best_Bid')), default='Best_Bid'),
+                Field('strategy', 'string', requires=IS_IN_SET(('Smart', 'Below_Best_Ask', 'Best_Bid')), default='Smart'),
                 Field('status', 'string', requires=IS_IN_SET(('enabled', 'disabled')), default='enabled'),
 )
 
