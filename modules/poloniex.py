@@ -2,7 +2,7 @@ import urllib
 import urllib2
 import json
 import time
-import hmac,hashlib
+import hmac, hashlib
 from lend_rate import LendRate
 from gluon import current
 from pydash import py_
@@ -33,34 +33,40 @@ class Poloniex:
 
         return after
 
-    def api_query(self, command, req={}):
+    def api_query(self, command, req={}, retry_count=0):
+        try:
+            if(command == "returnTicker" or command == "return24Volume"):
+                ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=' + command))
+                return json.loads(ret.read())
+            elif(command == "returnOrderBook"):
+                ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=' + command + '&currencyPair=' + str(req['currencyPair'])))
+                return json.loads(ret.read())
+            elif(command == "returnLoanOrders"):
+                ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=' + command + '&currency=' + str(req['currency'])))
+                return json.loads(ret.read())
+            elif(command == "returnMarketTradeHistory"):
+                ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=' + "returnTradeHistory" + '&currencyPair=' + str(req['currencyPair'])))
+                return json.loads(ret.read())
+            else:
+                req['command'] = command
+                req['nonce'] = int(time.time()*1000)
+                post_data = urllib.urlencode(req)
 
-        if(command == "returnTicker" or command == "return24Volume"):
-            ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=' + command))
-            return json.loads(ret.read())
-        elif(command == "returnOrderBook"):
-            ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=' + command + '&currencyPair=' + str(req['currencyPair'])))
-            return json.loads(ret.read())
-        elif(command == "returnLoanOrders"):
-            ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=' + command + '&currency=' + str(req['currency'])))
-            return json.loads(ret.read())
-        elif(command == "returnMarketTradeHistory"):
-            ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=' + "returnTradeHistory" + '&currencyPair=' + str(req['currencyPair'])))
-            return json.loads(ret.read())
-        else:
-            req['command'] = command
-            req['nonce'] = int(time.time()*1000)
-            post_data = urllib.urlencode(req)
+                sign = hmac.new(self.Secret, post_data, hashlib.sha512).hexdigest()
+                headers = {
+                    'Sign': sign,
+                    'Key': self.APIKey
+                }
 
-            sign = hmac.new(self.Secret, post_data, hashlib.sha512).hexdigest()
-            headers = {
-                'Sign': sign,
-                'Key': self.APIKey
-            }
+                ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/tradingApi', post_data, headers))
+                jsonRet = json.loads(ret.read())
+                return self.post_process(jsonRet)
+        except urllib2.HTTPError:
+            retry_count += 1
+            if retry_count < 3:
+                current.logger.debug('Retrying {0} count {1}.'.format(command, retry_count))
+                self.api_query(command, req, retry_count)
 
-            ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/tradingApi', post_data, headers))
-            jsonRet = json.loads(ret.read())
-            return self.post_process(jsonRet)
 
 
     def returnTicker(self):
@@ -178,7 +184,7 @@ class Poloniex:
 
     def offers(self):
         ofs_dict = self.api_query('returnOpenLoanOffers')
-        if isinstance(ofs_dict, list):
+        if isinstance(ofs_dict, list) or not ofs_dict:
             return ofs_dict
         new_offers = []
         for currency, ofs in ofs_dict.iteritems():
@@ -193,7 +199,10 @@ class Poloniex:
         return self.api_query('cancelLoanOffer', {'orderNumber':id})
 
     def credits(self):
-        cds = self.api_query('returnActiveLoans')['provided']
+        cds = self.api_query('returnActiveLoans')
+        if not cds:
+            return cds
+        cds = cds['provided']
         new_credits = []
         for c in cds:
             rate = float(c['rate']) * 365 * 100 #convert to apr

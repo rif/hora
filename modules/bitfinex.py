@@ -77,7 +77,7 @@ class Bitfinex(object):
     def lend_bids(self, currency):
         lends = self.lend_demand(currency, 'bids')
         return sorted(lends, key=lambda lend: float(lend.rate), reverse=True)
-        
+
     def lend_asks(self, currency):
         lends = self.lend_demand(currency, 'asks')
         return sorted(lends, key=lambda lend: float(lend.rate), reverse=False)
@@ -100,6 +100,7 @@ class Bitfinex(object):
     def credits(self):
         cds = self._post('credits')
         new_credits = []
+        if not type(cds) is list: return cds
         for c in cds:
             rate = float(c['rate']) # bitfinix already is in apy
             rate_of_return = rate * (1 - self._fee)
