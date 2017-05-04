@@ -30,11 +30,10 @@ def task_check_wallets():
 
 
 def task_reinvest(service, wallet, strategy):
+
     response = strategy.create_offer(wallet, service)
 
     # create offer history item for reporting
-    if not response:
-        continue
     offer_id = ''
     if 'offer_id' in response:
         offer_id = response['offer_id']
