@@ -15,7 +15,7 @@ if request.global_settings.web2py_version < "2.14.1":
 # if SSL/HTTPS is properly configured and you want all HTTP requests to
 # be redirected to HTTPS, uncomment the line below:
 # -------------------------------------------------------------------------
-# request.requires_https()
+request.requires_https()
 
 # -------------------------------------------------------------------------
 # app configuration made easy. Look inside private/appconfig.ini
