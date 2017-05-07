@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 response.logo = A(B('inv', SPAN('e'), 'sting.io'), XML('&trade;&nbsp;'),
-                  _class="navbar-brand", _href="http://www.web2py.com/",
-                  _id="web2py-logo")
+                  _class="navbar-brand", _href="#",
+                  _id="site-logo")
 response.title = 'investing.io'
 response.subtitle = ''
 

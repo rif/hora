@@ -85,18 +85,18 @@ select.autocomplete {
     border-color: #428bca;
     padding: 6px 12px;
 }
-#web2py-logo {
+#site-logo {
     color: #c6cecc;
 }
-#web2py-logo b {
+#site-logo b {
     display: inline-block;
     margin-top: -1px;
 }
-#web2py-logo b>span {
+#site-logo b>span {
     font-size: 22px;
     color: #FFF;
 }
-#web2py-logo:hover {
+#site-logo:hover {
     color: #FFF;
 }
 .footer > .container-fluid {
