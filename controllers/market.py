@@ -17,7 +17,7 @@ def lend_bids():
     bf = clients[service]()
     lend_bids =  var_utils.compact_lends_book(bf.lend_bids(currency))
     # https://stackoverflow.com/questions/5906831/serializing-a-python-namedtuple-to-json
-    lend_bids = list(map(lambda lb: lb._asdict(), lend_bids))
+    lend_bids = list(map(lambda lb: lb.to_dict(), lend_bids))
     lend_bids =  json.dumps(lend_bids)
     return dict(lend_bids = XML(lend_bids))
 

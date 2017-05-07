@@ -5,13 +5,13 @@
 <div class="row">
   <h3>Bitfinex</h3>
   <div class="col-md-6">
-    <table id="bitfinex-loan-bids" class="table table-bordered table-striped" cellspacing="0" width="100%">
+    <table id="bitfinex-loan-bids" class="table table-bordered table-striped compact text-right" width="100%" data-order='[[3, "desc"]]'>
       <thead>
         <tr>
-          <th class="text-right">{{=T('Period')}}</th>
-          <th class="text-right">{{=T('Amount')}}</th>
-          <th class="text-right">{{=T('APR')}}</th>
-          <th class="text-right">{{=T('Return')}}</th>
+          <th>{{=T('Period')}}</th>
+          <th>{{=T('Amount')}}</th>
+          <th>{{=T('APR')}}</th>
+          <th>{{=T('Return')}}</th>
         </tr>
       </thead>
     </table>
@@ -28,9 +28,9 @@
       },
       columns: [
         { data: 'period' },
-        { data: 'amount' },
-        { data: 'rate' },
-        { data: 'rate' }
+        { data: 'amount', 'render': $.fn.dataTable.render.number( ',', '.', 0) },
+        { data: 'apr', 'render': $.fn.dataTable.render.number( ',', '.', 3, '', '%' ) },
+        { data: 'rate_of_return', 'render': $.fn.dataTable.render.number( ',', '.', 3, '', '%' ) }
       ]
     });
     setInterval( function () {
