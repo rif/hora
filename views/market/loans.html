@@ -5,9 +5,10 @@
 <div class="row">
   <h3>Bitfinex</h3>
   <div class="col-md-6">
-    <table id="bitfinex-loan-bids" class="table table-bordered table-striped compact text-right" width="100%" data-order='[[3, "desc"]]'>
+    <table id="bitfinex-loan-bids" class="table table-bordered table-striped table-condensed text-right" width="100%" data-order='[[0, "asc"], [4, "desc"], [1, "desc"]]'>
       <thead>
         <tr>
+          <th>{{=T('Currency')}}</th>
           <th>{{=T('Period')}}</th>
           <th>{{=T('Amount')}}</th>
           <th>{{=T('APR')}}</th>
@@ -27,11 +28,13 @@
         dataSrc: ''
       },
       columns: [
+        { data: 'currency' },
         { data: 'period' },
         { data: 'amount', 'render': $.fn.dataTable.render.number( ',', '.', 0) },
         { data: 'apr', 'render': $.fn.dataTable.render.number( ',', '.', 3, '', '%' ) },
         { data: 'rate_of_return', 'render': $.fn.dataTable.render.number( ',', '.', 3, '', '%' ) }
-      ]
+      ],
+      pagingType: 'simple'
     });
     setInterval( function () {
       bfloanbids.ajax.reload( null, false );

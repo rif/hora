@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from factory import clients
+from collections import defaultdict
 import var_utils
 import json
 
@@ -8,18 +9,28 @@ def loans():
 
 
 
-@cache.action(time_expire=5, cache_model=cache.ram, prefix='lends', quick='VLP') # vars, lang and public
+@cache.action(time_expire=10, cache_model=cache.ram, prefix='lends', quick='VLP') # vars, lang and public
 def lend_bids():
-    currency = 'USD'
+    currencies = ['USD', 'BTC', 'ETH', 'LTC']
     service = 'Bitfinex'
-    if not service or not currency:
+    if not service or not currencies:
         redirect(URL('index'))
     bf = clients[service]()
-    lend_bids =  var_utils.compact_lends_book(bf.lend_bids(currency))
-    # https://stackoverflow.com/questions/5906831/serializing-a-python-namedtuple-to-json
-    lend_bids = list(map(lambda lb: lb.to_dict(), lend_bids))
-    lend_bids =  json.dumps(lend_bids)
-    return dict(lend_bids = XML(lend_bids))
+    filtered_bids = []
+    for currency in currencies:
+        lend_bids =  var_utils.compact_lends_book(bf.lend_bids(currency))
+        #get highest rate for each period. adapted from https://stackoverflow.com/questions/3749512/python-group-by
+        grouped_by_period = defaultdict(list)
+        for lb in lend_bids: grouped_by_period[lb.period].append(lb)
+        lend_bids = [v[0] for k,v in grouped_by_period.items()]
+        # convert to dict https://stackoverflow.com/questions/5906831/serializing-a-python-namedtuple-to-json
+        lend_bids = list(map(lambda lb: lb.to_dict(), lend_bids))
+        for lb in lend_bids: lb['currency'] = currency
+        #lend_bids = list(map(lambda lb: lb['currency'] = currency, lend_bids))
+        #append to the overall list
+        filtered_bids.extend(lend_bids)
+    filtered_bids =  json.dumps(filtered_bids)
+    return dict(lend_bids = XML(filtered_bids))
 
 def lend_book():
     currency = request.vars.currency
