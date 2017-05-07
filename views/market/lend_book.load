@@ -1,0 +1,28 @@
+<table id="bitfinex-loan-bids" class="table table-bordered table-striped" cellspacing="0" width="100%">
+  <thead>
+    <tr>
+      <th class="text-right">{{=T('Period')}}</th>
+      <th class="text-right">{{=T('Amount')}}</th>
+      <th class="text-right">{{=T('APR')}}</th>
+      <th class="text-right">{{=T('Return')}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{for lend in lend_book:}}
+    <tr>
+      <td class="text-right">{{=lend.period}}</td>
+      <td class="text-right">{{='{:,.4f}'.format(float(lend.amount))}}</td>
+      <td class="text-right">{{='{:,.3f} %'.format(lend.apr)}}</td>
+      <td class="text-right">{{='{:,.3f} %'.format(lend.rate_of_return)}}</td>
+    </tr>
+    {{pass}}
+  </tbody>
+</table>
+
+{{block page_js}}
+<script type="text/javascript">
+ $(document).ready(function() {
+   $('#bitfinex-loan-bids').DataTable();
+ });
+</script>
+{{end}}

@@ -1,0 +1,47 @@
+{{extend 'layout.html'}}
+
+<h1>{{=T('Current Loan Market')}}</h1>
+
+<div class="row">
+  <h3>Bitfinex</h3>
+  <div class="col-md-6">
+    <table id="bitfinex-loan-bids" class="table table-bordered table-striped" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+          <th class="text-right">{{=T('Period')}}</th>
+          <th class="text-right">{{=T('Amount')}}</th>
+          <th class="text-right">{{=T('APR')}}</th>
+          <th class="text-right">{{=T('Return')}}</th>
+        </tr>
+      </thead>
+    </table>
+  </div>  
+</div>
+
+{{block page_js}}
+<script type="text/javascript">
+ $(document).ready(function() {
+    var bfloanbids = $('#bitfinex-loan-bids').DataTable({
+      ajax: {
+        url: '{{=URL('market', 'lend_bids.json')}}',
+        dataSrc: ''
+      },
+      columns: [
+        { data: 'period' },
+        { data: 'amount' },
+        { data: 'rate' },
+        { data: 'rate' }
+      ]
+    });
+    setInterval( function () {
+      bfloanbids.ajax.reload( null, false );
+    }, 5000);
+ });
+</script>
+{{end}}
+
+
+
+
+
+
