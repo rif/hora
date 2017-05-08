@@ -5,7 +5,23 @@
 <div class="row">
   <h3>Bitfinex</h3>
   <div class="col-md-6">
+    <h4>Bids</h4>
     <table id="bitfinex-loan-bids" class="table table-bordered table-striped table-condensed text-right" width="100%" data-order='[[0, "asc"], [4, "desc"], [1, "desc"]]'>
+      <thead>
+        <tr>
+          <th>{{=T('Currency')}}</th>
+          <th>{{=T('Period')}}</th>
+          <th>{{=T('Amount')}}</th>
+          <th>{{=T('APR')}}</th>
+          <th>{{=T('Return')}}</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+  
+  <div class="col-md-6">
+    <h4>Asks</h4>
+    <table id="bitfinex-loan-asks" class="table table-bordered table-striped table-condensed text-right" width="100%" data-order='[[0, "asc"], [4, "desc"], [1, "desc"]]'>
       <thead>
         <tr>
           <th>{{=T('Currency')}}</th>
@@ -19,12 +35,47 @@
   </div>  
 </div>
 
+
+<div class="row">
+  <h4>Poloniex</h4>
+  <div class="col-md-6">
+    <h4>Bids</h4>
+    <table id="poloniex-loan-bids" class="table table-bordered table-striped table-condensed text-right" width="100%" data-order='[[0, "asc"], [4, "desc"], [1, "desc"]]'>
+      <thead>
+        <tr>
+          <th>{{=T('Currency')}}</th>
+          <th>{{=T('Period')}}</th>
+          <th>{{=T('Amount')}}</th>
+          <th>{{=T('APR')}}</th>
+          <th>{{=T('Return')}}</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+  
+  <div class="col-md-6">
+    <h4>Asks</h4>
+    <table id="poloniex-loan-asks" class="table table-bordered table-striped table-condensed text-right" width="100%" data-order='[[0, "asc"], [4, "desc"], [1, "desc"]]'>
+      <thead>
+        <tr>
+          <th>{{=T('Currency')}}</th>
+          <th>{{=T('Period')}}</th>
+          <th>{{=T('Amount')}}</th>
+          <th>{{=T('APR')}}</th>
+          <th>{{=T('Return')}}</th>
+        </tr>
+      </thead>
+    </table>
+  </div>  
+</div>
+
+
 {{block page_js}}
 <script type="text/javascript">
- $(document).ready(function() {
-    var bfloanbids = $('#bitfinex-loan-bids').DataTable({
+  var initLoanBookDatatable = function(tableId, ajaxUrl)  {
+    var bfloanbids = $(tableId).DataTable({
       ajax: {
-        url: '{{=URL('market', 'lend_bids.json')}}',
+        url: ajaxUrl,
         dataSrc: ''
       },
       columns: [
@@ -38,8 +89,15 @@
     });
     setInterval( function () {
       bfloanbids.ajax.reload( null, false );
-    }, 5000);
- });
+    }, 5000);    
+  };
+
+  $(document).ready(function() {
+    initLoanBookDatatable('#bitfinex-loan-bids', '{{=URL('market', 'lends.json', args=['bids', 'bitfinex', 'usd.btc.eth.ltc'])}}');
+    initLoanBookDatatable('#bitfinex-loan-asks', '{{=URL('market', 'lends.json', args=['asks', 'bitfinex', 'usd.btc.eth.ltc'])}}');
+    initLoanBookDatatable('#poloniex-loan-bids', '{{=URL('market', 'lends.json', args=['bids', 'poloniex', 'btc.eth.ltc'])}}');
+    initLoanBookDatatable('#poloniex-loan-asks', '{{=URL('market', 'lends.json', args=['asks', 'poloniex', 'btc.eth.ltc'])}}');
+  });
 </script>
 {{end}}
 
