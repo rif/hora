@@ -35,7 +35,7 @@ if not request.env.web2py_runtime_gae:
     db = DAL(myconf.get('db.uri'),
              pool_size=myconf.get('db.pool_size'),
              migrate_enabled=myconf.get('db.migrate'),
-             check_reserved=['all'])
+             check_reserved=['all'],fake_migrate_all=False)
     session.connect(request, response, cookie_key='yMn0s71JpKRZpJQBV57NyyRze90XjKsLOKh1KuIvDos', compression_level=9)
 else:
     # ---------------------------------------------------------------------

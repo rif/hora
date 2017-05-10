@@ -2,7 +2,7 @@ from gluon.scheduler import Scheduler
 from factory import clients, strategies
 from gluon import current
 
-db_task = DAL(myconf.get('db_task.uri'), migrate_enabled=myconf.get('db_task.migrate'))
+db_task = DAL(myconf.get('db_task.uri'), migrate_enabled=myconf.get('db_task.migrate'),fake_migrate_all=False)
 
 def task_check_wallets():
     current.logger.debug('Starting reinvest task...')
@@ -18,32 +18,43 @@ def task_check_wallets():
                 minOffer = service.min_lend(wallet['currency'])
                 current.logger.debug('  {0} ({1}): {2} {3} available to lend. Min lend is {4}'.format(provider.service, provider.name, float(wallet['available']), wallet['currency'], minOffer))
                 if float(wallet['available']) > minOffer:
+                    print("HERE")
                     scheduler.queue_task('reinvest',
-                                         pvars=dict(service=service, wallet=wallet, provider=provider),
+                                         pvars=dict(provider=dict(
+                                             id=provider.id,
+                                             service=provider.service,
+                                             key=provider.api_key,
+                                             secret=provider.secret,
+                                             strategy=provider.strategy,
+                                             created_by=provider.created_by,
+                                         )),
                                          repeats=1,  # run 1 time
                                          timeout=600,  # should take less than 5 min
                                          retry_failed=-1, # retry for unlimited times (if failed)
                                          )
                     wallets_found.append(wallets)
+                db_task.commit()
     return wallets_found
 
 
-def task_reinvest(service, wallet, provider):
-    strategy = strategies[provider.strategy]
+def task_reinvest(provider):
+    #service = clients[provider.service](provider.api_key, provider.secret)
+    output = provider
+    strategy = strategies[provider['strategy']]
 
     lock_id = db.wallet_lock.insert(
-        wallet_owner = provider.created_by,
-        provider = provider.id,
+        wallet_owner = provider['created_by'],
+        provider = provider['id'],
     )
     db.offer.insert(
         wallet_lock=lock_id,
                     offer_id="x",
-                    currency=wallet['currency'],
-                    amount=wallet['available'],
+                    currency='USD',
+                    amount=55.1,
                     rate=22.3,
                     period=4
                 )
-    #response = strategy.create_offer(wallet, service)
+    #output = strategy.create_offer(wallet, service)
 
     # create offer history item for reporting
     #offer_id = ''
@@ -61,7 +72,7 @@ def task_reinvest(service, wallet, provider):
     #                period=lowest_ask.period
     #            )
     db.commit()
-    return response
+    return output
 
 
 scheduler = Scheduler(db_task, tasks={
