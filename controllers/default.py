@@ -55,26 +55,6 @@ def cancel_offer():
     service.cancel_offer(offer_id)
     redirect(URL('default', 'index.html'))
 
-@cache.action(time_expire=5, cache_model=cache.ram, prefix='lends', quick='VLP') # vars, lang and public
-def lend_book():
-    currency = request.vars.currency
-    service = request.vars.service
-    if not service or not currency:
-        redirect(URL('index'))
-    bf = clients[service]()
-    lend_book =  var_utils.compact_lends_book(bf.lend_bids(currency))
-    return dict(lend_book = lend_book)
-
-@cache.action(time_expire=5, cache_model=cache.ram, prefix='lends', quick='VLP') # vars, lang and public
-def lend_matches():
-    currency = request.vars.currency
-    service = request.vars.service
-    if not service or not currency:
-        redirect(URL('index'))
-    bf = clients[service]()
-    lend_matches = bf.lend_matches(currency)
-    return dict(lend_matches = lend_matches)
-
 @auth.requires_login()
 def ensure_task():
     scheduled_task = scheduler.task_status(db_task.scheduler_task.task_name == 'reinvest', output=True)

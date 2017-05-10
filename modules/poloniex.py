@@ -76,10 +76,11 @@ class Poloniex:
         return self.api_query("return24Volume")
 
     def returnOrderBook (self, currencyPair):
-        return self.api_query("returnOrderBook", {'currencyPair': currencyPair})
+        
+        return self.api_query("returnOrderBook", {'currencyPair': currencyPair.upper()})
 
     def returnMarketTradeHistory (self, currencyPair):
-        return self.api_query("returnMarketTradeHistory", {'currencyPair': currencyPair})
+        return self.api_query("returnMarketTradeHistory", {'currencyPair': currencyPair.upper()})
 
 
     # Returns all of your balances.
@@ -98,7 +99,7 @@ class Poloniex:
     # Amount        Quantity of order
     # total         Total value of order (price * quantity)
     def returnOpenOrders(self,currencyPair):
-        return self.api_query('returnOpenOrders',{"currencyPair":currencyPair})
+        return self.api_query('returnOpenOrders',{"currencyPair":currencyPair.upper()})
 
 
     # Returns your trade history for a given market, specified by the "currencyPair" POST parameter
@@ -111,7 +112,7 @@ class Poloniex:
     # total         Total value of order (price * quantity)
     # type          sell or buy
     def returnTradeHistory(self,currencyPair):
-        return self.api_query('returnTradeHistory',{"currencyPair":currencyPair})
+        return self.api_query('returnTradeHistory',{"currencyPair":currencyPair.upper()})
 
     # Places a buy order in a given market. Required POST parameters are "currencyPair", "rate", and "amount". If successful, the method will return the order number.
     # Inputs:
@@ -121,7 +122,7 @@ class Poloniex:
     # Outputs:
     # orderNumber   The order number
     def buy(self,currencyPair,rate,amount):
-        return self.api_query('buy',{"currencyPair":currencyPair,"rate":rate,"amount":amount})
+        return self.api_query('buy',{"currencyPair":currencyPair.upper(),"rate":rate,"amount":amount})
 
     # Places a sell order in a given market. Required POST parameters are "currencyPair", "rate", and "amount". If successful, the method will return the order number.
     # Inputs:
@@ -131,7 +132,7 @@ class Poloniex:
     # Outputs:
     # orderNumber   The order number
     def sell(self,currencyPair,rate,amount):
-        return self.api_query('sell',{"currencyPair":currencyPair,"rate":rate,"amount":amount})
+        return self.api_query('sell',{"currencyPair":currencyPair.upper(),"rate":rate,"amount":amount})
 
     # Cancels an order you have placed in a given market. Required POST parameters are "currencyPair" and "orderNumber".
     # Inputs:
@@ -140,7 +141,7 @@ class Poloniex:
     # Outputs:
     # succes        1 or 0
     def cancel(self,currencyPair,orderNumber):
-        return self.api_query('cancelOrder',{"currencyPair":currencyPair,"orderNumber":orderNumber})
+        return self.api_query('cancelOrder',{"currencyPair":currencyPair.upper(),"orderNumber":orderNumber})
 
     # Immediately places a withdrawal for a given currency, with no email confirmation. In order to use this method, the withdrawal privilege must be enabled for your API key. Required POST parameters are "currency", "amount", and "address". Sample output: {"response":"Withdrew 2398 NXT."}
     # Inputs:
@@ -150,11 +151,11 @@ class Poloniex:
     # Outputs:
     # response      Text containing message about the withdrawal
     def withdraw(self, currency, amount, address):
-        return self.api_query('withdraw',{"currency":currency, "amount":amount, "address":address})
+        return self.api_query('withdraw',{"currency":currency.upper(), "amount":amount, "address":address})
 
     def lend_demand(self, currency, bids_asks):
         # current.logger.debug('Getting {0} lend {1} on Poloniex...'.format(currency, bids_asks))
-        lends_json = self.api_query('returnLoanOrders', {"currency":currency})[bids_asks]
+        lends_json = self.api_query('returnLoanOrders', {"currency":currency.upper()})[bids_asks]
         lends = []
         for lend in lends_json:
             lends.append(LendRate(rate=lend['rate'], amount=lend['amount'], period=lend['rangeMin'], rate_type=self._rate_type, fee=self._fee))
@@ -170,7 +171,7 @@ class Poloniex:
         return sorted(lends, key=lambda lend: float(lend.rate), reverse=False)
 
     def lend_matches(self, currency):
-        demands = self.api_query('returnLoanOrders', {"currency":currency})
+        demands = self.api_query('returnLoanOrders', {"currency":currency.upper()})
         return demands.keys()
 
     def wallets(self):
@@ -193,7 +194,7 @@ class Poloniex:
         return new_offers
 
     def new_offer(self, currency, amount, rate, period, direction='lend'):
-        return self.api_query('createLoanOffer', {'currency':currency, 'amount':amount, 'lendingRate':rate, 'duration':period})
+        return self.api_query('createLoanOffer', {'currency':currency.upper(), 'amount':amount, 'lendingRate':rate, 'duration':period})
 
     def cancel_offer(self, id):
         return self.api_query('cancelLoanOffer', {'orderNumber':id})

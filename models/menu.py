@@ -50,6 +50,7 @@ def _():
     # ------------------------------------------------------------------------------------------------------------------
     response.menu += [
         (T('Providers'), False, URL('default', 'providers')),
+        (T('Loan Market'), False, URL('market', 'loans')),
     ]
 
 
