@@ -8,7 +8,7 @@ def task_check_wallets():
     current.logger.debug('Starting reinvest task...')
 
     providers = db(db.provider.status=='enabled').select()
-    wallets_found = []
+    providers_found = [] # providers with available amount in wallets
     for provider in providers:
         service = clients[provider.service](provider.api_key, provider.secret)
         wallets = service.wallets()
@@ -18,7 +18,6 @@ def task_check_wallets():
                 minOffer = service.min_lend(wallet['currency'])
                 current.logger.debug('  {0} ({1}): {2} {3} available to lend. Min lend is {4}'.format(provider.service, provider.name, float(wallet['available']), wallet['currency'], minOffer))
                 if float(wallet['available']) > minOffer:
-                    print("HERE")
                     scheduler.queue_task('reinvest',
                                          pvars=dict(provider=dict(
                                              id=provider.id,
@@ -32,47 +31,43 @@ def task_check_wallets():
                                          timeout=600,  # should take less than 5 min
                                          retry_failed=-1, # retry for unlimited times (if failed)
                                          )
-                    wallets_found.append(wallets)
-                db_task.commit()
-    return wallets_found
+                    providers_found.append(provider)
+                    break # the task will check all wallets, skip to next provider
+    if len(providers_found)>0:
+        db_task.commit()
+    return providers_found
 
 
 def task_reinvest(provider):
-    #service = clients[provider.service](provider.api_key, provider.secret)
-    output = provider
+    service = clients[provider['service']](provider['key'], provider['secret'])
     strategy = strategies[provider['strategy']]
 
+    print("PROVIDER: ", provider)
     lock_id = db.wallet_lock.insert(
         wallet_owner = provider['created_by'],
         provider = provider['id'],
     )
-    db.offer.insert(
-        wallet_lock=lock_id,
-                    offer_id="x",
-                    currency='USD',
-                    amount=55.1,
-                    rate=22.3,
-                    period=4
-                )
-    #output = strategy.create_offer(wallet, service)
+    wallets = service.wallets()
+    for wallet in wallets:
+        offer = strategy.create_offer(wallet, service)
 
-    # create offer history item for reporting
-    #offer_id = ''
-    #if 'offer_id' in response:
-    #    offer_id = response['offer_id']
-    #    if 'orderID' in response:
-    #        offer_id = response['orderID']
-    #        if offer_id:
-    #            db.offer.insert(
-    #                offer_id=offer_id,
-    #                offered_by=provider.created_by,
-    #                currency=wallet['currency'],
-    #                amount=wallet['available'],
-    #                rate=offer_rate,
-    #                period=lowest_ask.period
-    #            )
+        # create offer history item for reporting
+        offer_id = ''
+        if 'offer_id' in offer:
+            offer_id = offer['offer_id']
+            if 'orderID' in offer:
+                offer_id = offer['orderID']
+                if offer_id:
+                    db.offer.insert(
+                        wallet_lock=lock_id,
+                        offer_id=offer_id,
+                        currency=wallet['currency'],
+                        amount=wallet['available'],
+                        rate=offer_rate,
+                        period=lowest_ask.period
+                    )
     db.commit()
-    return output
+    return 'ok'
 
 
 scheduler = Scheduler(db_task, tasks={
