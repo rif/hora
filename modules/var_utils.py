@@ -2,6 +2,8 @@ from lend_rate import LendRate
 
 def compact_lends_book(lends):
     new_lends = []
+    if len(lends) == 0:
+        return new_lends
     current_rate = float(lends[0].rate)
     current_apr = lends[0].apr
     current_amount = float(lends[0].amount)

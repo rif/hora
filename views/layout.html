@@ -13,7 +13,7 @@
           initial-scale = 1.0 retains dimensions instead of zooming out if page height > device height
           user-scalable = yes allows the user to zoom in -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{=response.title or request.application}}</title>
+    <title>{{=response.title or 'investing.io'}}</title>
     <!-- http://dev.w3.org/html5/markup/meta.name.html -->
     <meta name="application-name" content="{{=request.application}}">
     <!-- Speaking of Google, don't forget to set your site up:
@@ -24,6 +24,10 @@
     <link rel="stylesheet" href="{{=URL('static','css/web2py-bootstrap3.css')}}"/>
     <link rel="shortcut icon" href="{{=URL('static','images/favicon.ico')}}" type="image/x-icon">
     <link rel="apple-touch-icon" href="{{=URL('static','images/favicon.png')}}">
+    
+    <!-- datatables.net -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.15/r-2.1.1/datatables.min.css"/>
+
     <!-- All JavaScript at the bottom, except for Modernizr which enables
          HTML5 elements & feature detects -->
     <script src="{{=URL('static','js/modernizr-2.8.3.min.js')}}"></script>
@@ -69,7 +73,7 @@
         </div>
       </div>
     </nav>
-    <!-- Masthead ===================================== -->    
+    <!-- Masthead ===================================== -->
     {{block header}}
     {{end}}
     <!-- Main ========================================= -->
@@ -101,13 +105,11 @@
 
     </div>
 
-    {{block footer}} <!-- this is default footer -->      
+    {{block footer}} <!-- this is default footer -->
     <footer class="footer">
       <div class="container-fluid">
         <div class="copyright pull-left">{{=T('Copyright')}} &#169; {{=request.now.year}}</div>
           <div id="poweredBy" class="pull-right">
-            {{=T('Powered by')}}
-            <a href="http://www.web2py.com/">web2py</a>
           </div>
       </div>
     </footer>
@@ -115,6 +117,8 @@
     <!-- The javascript =============================== -->
     <script src="{{=URL('static','js/bootstrap.min.js')}}"></script>
     <script src="{{=URL('static','js/web2py-bootstrap3.js')}}"></script>
+    <!-- datatables.net js -->
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.15/r-2.1.1/datatables.min.js"></script>
     {{block page_js}}{{end page_js}}
     {{if response.google_analytics_id:}}
     <!-- Analytics ==================================== -->
