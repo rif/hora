@@ -87,10 +87,6 @@ def ensure_task():
                      )
     return BEAUTIFY(scheduled_task)
 
-@auth.requires_login()
-def status():
-    return dict(request=request, session=session, response=response)
-
 def user():
     """
     exposes:

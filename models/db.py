@@ -15,7 +15,8 @@ if request.global_settings.web2py_version < "2.14.1":
 # if SSL/HTTPS is properly configured and you want all HTTP requests to
 # be redirected to HTTPS, uncomment the line below:
 # -------------------------------------------------------------------------
-# request.requires_https()
+if not (request.env.http_host.startswith('localhost') or request.env.http_host.startswith('127.0.0.1')):
+    request.requires_https()
 
 # -------------------------------------------------------------------------
 # app configuration made easy. Look inside private/appconfig.ini
@@ -151,12 +152,16 @@ db.define_table('provider',
 )
 
 db.define_table('offer',
+                Field('wallet_lock', 'reference offer'),
                 Field('offer_id', 'string'),
-                Field('offered_by', 'reference auth_user'),
                 Field('currency', 'string'),
                 Field('amount', 'double'),
                 Field('rate', 'double'),
                 Field('period', 'integer'),
                 Field('status', 'string', requires=IS_IN_SET(('processed', 'cancelled')), default='processed'),
-                Field('created', 'datetime', default=request.now),
+)
+
+db.define_table('wallet_lock',
+                Field('wallet_owner', 'reference auth_user'),
+                Field('provider', 'reference provider'), # composed of provider name and
 )
