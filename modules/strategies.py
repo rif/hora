@@ -6,6 +6,7 @@ class strategy(object):
         self.min_period = min_period
 
     def create_offer(self, service, wallet):
+        current.logger.debug("in strategy: {service}".format(service=service))
         bids = service.lend_bids(wallet['currency'])
         asks = service.lend_asks(wallet['currency'])
 

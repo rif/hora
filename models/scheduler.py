@@ -29,7 +29,7 @@ def task_check_wallets():
                                          )),
                                          repeats=1,  # run 1 time
                                          timeout=600,  # should take less than 5 min
-                                         retry_failed=-1, # retry for unlimited times (if failed)
+                                         retry_failed=0, # retry for unlimited times (if failed)
                                          )
                     providers_found.append(provider)
                     break # the task will check all wallets, skip to next provider
@@ -42,14 +42,13 @@ def task_reinvest(provider):
     service = clients[provider['service']](provider['key'], provider['secret'])
     strategy = strategies[provider['strategy']]
 
-    print("PROVIDER: ", provider)
     lock_id = db.wallet_lock.insert(
         wallet_owner = provider['created_by'],
         provider = provider['id'],
     )
     wallets = service.wallets()
     for wallet in wallets:
-        offer = strategy.create_offer(wallet, service)
+        offer = strategy.create_offer(service, wallet)
 
         # create offer history item for reporting
         offer_id = ''
