@@ -1,6 +1,7 @@
 import urllib
 import urllib2
 import json
+import requests
 import time
 import hmac, hashlib
 from lend_rate import LendRate
@@ -33,34 +34,38 @@ class Poloniex:
 
         return after
 
+    def _query_public_api(self, command, req={}):
+        requestUrl = 'https://poloniex.com/public?command='
+        if(command == "returnTicker" or command == "return24hVolume"):
+            requestUrl += command
+        elif(command == "returnOrderBook"):
+            requestUrl += command + '&currencyPair=' + str(req['currencyPair'])
+        elif(command == "returnLoanOrders"):
+            requestUrl += command + '&currency=' + str(req['currency'])
+        elif(command == "returnMarketTradeHistory"):
+            requestUrl += "returnTradeHistory" + '&currencyPair=' + str(req['currencyPair'])
+        
+        r = current.cache.ram(requestUrl, lambda: requests.get(requestUrl), time_expire=2)
+        if r.status_code != 200:
+            current.logger.error('API call failed with status code:{0!s} and message:{1!r}'.format(r.status_code, r.json))
+        return r.json() if r.status_code == 200 else r.status_code
+
+
     def api_query(self, command, req={}, retry_count=0):
         try:
-            if(command == "returnTicker" or command == "return24Volume"):
-                ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=' + command))
-                return json.loads(ret.read())
-            elif(command == "returnOrderBook"):
-                ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=' + command + '&currencyPair=' + str(req['currencyPair'])))
-                return json.loads(ret.read())
-            elif(command == "returnLoanOrders"):
-                ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=' + command + '&currency=' + str(req['currency'])))
-                return json.loads(ret.read())
-            elif(command == "returnMarketTradeHistory"):
-                ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/public?command=' + "returnTradeHistory" + '&currencyPair=' + str(req['currencyPair'])))
-                return json.loads(ret.read())
-            else:
-                req['command'] = command
-                req['nonce'] = int(time.time()*1000)
-                post_data = urllib.urlencode(req)
+            req['command'] = command
+            req['nonce'] = int(time.time()*1000)
+            post_data = urllib.urlencode(req)
 
-                sign = hmac.new(self.Secret, post_data, hashlib.sha512).hexdigest()
-                headers = {
-                    'Sign': sign,
-                    'Key': self.APIKey
-                }
+            sign = hmac.new(self.Secret, post_data, hashlib.sha512).hexdigest()
+            headers = {
+                'Sign': sign,
+                'Key': self.APIKey
+            }
 
-                ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/tradingApi', post_data, headers))
-                jsonRet = json.loads(ret.read())
-                return self.post_process(jsonRet)
+            ret = urllib2.urlopen(urllib2.Request('https://poloniex.com/tradingApi', post_data, headers))
+            jsonRet = json.loads(ret.read())
+            return self.post_process(jsonRet)
         except urllib2.HTTPError:
             retry_count += 1
             if retry_count < 3:
@@ -70,17 +75,17 @@ class Poloniex:
 
 
     def returnTicker(self):
-        return self.api_query("returnTicker")
+        return self._query_public_api("returnTicker")
 
-    def return24Volume(self):
-        return self.api_query("return24Volume")
+    def return24hVolume(self):
+        return self._query_public_api("return24hVolume")
 
     def returnOrderBook (self, currencyPair):
         
-        return self.api_query("returnOrderBook", {'currencyPair': currencyPair.upper()})
+        return self._query_public_api("returnOrderBook", {'currencyPair': currencyPair.upper()})
 
     def returnMarketTradeHistory (self, currencyPair):
-        return self.api_query("returnMarketTradeHistory", {'currencyPair': currencyPair.upper()})
+        return self._query_public_api("returnMarketTradeHistory", {'currencyPair': currencyPair.upper()})
 
 
     # Returns all of your balances.
@@ -155,7 +160,7 @@ class Poloniex:
 
     def lend_demand(self, currency, bids_asks):
         # current.logger.debug('Getting {0} lend {1} on Poloniex...'.format(currency, bids_asks))
-        lends_json = self.api_query('returnLoanOrders', {"currency":currency.upper()})[bids_asks]
+        lends_json = self._query_public_api('returnLoanOrders', {"currency":currency.upper()})[bids_asks]
         lends = []
         for lend in lends_json:
             lends.append(LendRate(rate=lend['rate'], amount=lend['amount'], period=lend['rangeMin'], rate_type=self._rate_type, fee=self._fee))
@@ -171,7 +176,7 @@ class Poloniex:
         return sorted(lends, key=lambda lend: float(lend.rate), reverse=False)
 
     def lend_matches(self, currency):
-        demands = self.api_query('returnLoanOrders', {"currency":currency.upper()})
+        demands = self._query_public_api('returnLoanOrders', {"currency":currency.upper()})
         return demands.keys()
 
     def wallets(self):

@@ -4,6 +4,7 @@ import time
 import json
 import requests
 import base64
+import urllib
 from threading import Lock
 from lend_rate import LendRate
 from gluon import current
@@ -28,10 +29,14 @@ class Bitfinex(object):
             self._nonce = max(int(time.time()*1000), self._nonce)
             return self._nonce
 
-
-    def _get(self, api, *args):
+    def _get(self, api, *args, **kwargs):
         params = "/" + "/".join(args) if args else ''
-        r = requests.get(self.url + api + params)
+        requestUrl = self.url + api + params
+        if kwargs:
+            requestUrl += '?' + urllib.urlencode(kwargs)
+        # current.logger.debug('About to request make Bitfinex request: {0}'.format(requestUrl))
+        #r = requests.get(requestUrl)
+        r = current.cache.ram(requestUrl, lambda: requests.get(requestUrl), time_expire=2)
         if r.status_code != 200:
             current.logger.error('API call failed with status code:{0!s} and message:{1!r}'.format(r.status_code, r.json))
         return r.json() if r.status_code == 200 else r.status_code
@@ -65,10 +70,9 @@ class Bitfinex(object):
         finally:
             mutex.release()
 
-
     def lend_demand(self, currency, bids_asks):
         # current.logger.debug('Getting {0} lend {1} on Bitfinex...'.format(currency, bids_asks))
-        lends_json = self._get('lendbook', currency)[bids_asks]
+        lends_json = self._get('lendbook', currency, limit_bids=100, limit_asks=100)[bids_asks]
         lends = []
         for lend in lends_json:
             lends.append(LendRate(rate=lend['rate'], amount=lend['amount'], period=lend['period'], rate_type=self._rate_type, fee=self._fee))

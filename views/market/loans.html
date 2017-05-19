@@ -76,7 +76,8 @@
     var bfloanbids = $(tableId).DataTable({
       ajax: {
         url: ajaxUrl,
-        dataSrc: ''
+        dataSrc: '',
+        cache: true
       },
       columns: [
         { data: 'currency' },
