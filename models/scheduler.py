@@ -10,6 +10,7 @@ def task_check_wallets():
     providers = db(db.provider.status=='enabled').select()
     providers_found = [] # providers with available amount in wallets
     for provider in providers:
+        # TODO: check the account lock to avoid starting multiple tasks fro the same account
         service = clients[provider.service](provider.api_key, provider.secret)
         wallets = service.wallets()
         for wallet in wallets:
@@ -27,7 +28,7 @@ def task_check_wallets():
                                              strategy=provider.strategy,
                                              created_by=provider.created_by,
                                          )),
-                                         repeats=1,  # run 1 time
+                                         repeats=0,  # run infinite time # TODO: disable the task from it's own code when all the money were reinvested succesfully
                                          timeout=600,  # should take less than 5 min
                                          retry_failed=0, # retry for unlimited times (if failed)
                                          )
@@ -39,6 +40,8 @@ def task_check_wallets():
 
 
 def task_reinvest(provider):
+    # TODO: check all existing offers and current market before cancelling them and making new offers according to the strategy
+    # TODO: this can be done in the strategy or sent as parameters to the strategy
     service = clients[provider['service']](provider['key'], provider['secret'])
     strategy = strategies[provider['strategy']]
 
@@ -46,6 +49,7 @@ def task_reinvest(provider):
         wallet_owner = provider['created_by'],
         provider = provider['id'],
     )
+    # TODO: if all the offers were matched take out the lock and disable this task
     wallets = service.wallets()
     for wallet in wallets:
         offer = strategy.create_offer(service, wallet)

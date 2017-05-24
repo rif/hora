@@ -11,6 +11,7 @@ class strategy(object):
         asks = service.lend_asks(wallet['currency'])
 
         # force min period for now
+        # TODO: optimize this period
         min_lend_time = lambda l: l.period == self.min_period
         #highest_bid = bids[0] #current market dynamics allows this, but it's not a permanent thing
         highest_bid = py_.find(bids, min_lend_time) or bids[0]
